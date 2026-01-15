@@ -1,0 +1,61 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold gradient-text mb-2">
+                <i class="fas fa-school mr-3"></i>My Classes
+            </h1>
+            <p class="text-gray-600">View all your enrolled classes and course materials</p>
+        </div>
+
+        <!-- Classes Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for class in student_classes %}
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift">
+                <div class="h-4 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">{{ class.course_name }}</h3>
+                            <p class="text-sm text-gray-600">{{ class.class_name }} • {{ class.teacher_name }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Schedule</span>
+                            <span class="font-medium">{{ class.schedule }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Room</span>
+                            <span class="font-medium">{{ class.room }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Attendance</span>
+                            <span class="font-medium text-green-600">{{ class.attendance }}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <a href="{{ url_for('course_details', course_id=class.course_id) }}" 
+                           class="flex-1 text-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </a>
+                        <a href="{{ url_for('class_materials', class_id=class.id) }}" 
+                           class="flex-1 text-center px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">
+                            <i class="fas fa-download mr-1"></i> Materials
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+{% include 'footer.html' %}

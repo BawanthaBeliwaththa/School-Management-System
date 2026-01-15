@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Assignment - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Edit Assignment</h1>
+        <p class="text-gray-600 dark:text-gray-300">{{ assignment.course_name }} - {{ assignment.title }}</p>
+    </div>
+    
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Edit Assignment Details</h2>
+            </div>
+            
+            <div class="p-6">
+                <form method="POST">
+                    <div class="space-y-6">
+                        <!-- Basic Information -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Title <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="title" value="{{ assignment.title }}" required
+                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                            <textarea name="description" rows="3"
+                                      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">{{ assignment.description or '' }}</textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Due Date <span class="text-red-500">*</span>
+                                </label>
+                                <input type="datetime-local" name="due_date" 
+                                       value="{{ assignment.due_date.strftime('%Y-%m-%dT%H:%M') if assignment.due_date else '' }}" required
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Maximum Marks <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" name="max_marks" value="{{ assignment.max_marks }}" required
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Weightage (%)</label>
+                                <input type="number" name="weightage" value="{{ assignment.weightage or 10 }}" step="0.1"
+                                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Assignment Type</label>
+                                <select name="assignment_type"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="individual" {% if assignment.assignment_type == 'individual' %}selected{% endif %}>Individual</option>
+                                    <option value="group" {% if assignment.assignment_type == 'group' %}selected{% endif %}>Group</option>
+                                    <option value="quiz" {% if assignment.assignment_type == 'quiz' %}selected{% endif %}>Quiz</option>
+                                    <option value="project" {% if assignment.assignment_type == 'project' %}selected{% endif %}>Project</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Instructions</label>
+                            <textarea name="instructions" rows="2"
+                                      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">{{ assignment.instructions or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 mt-8">
+                        <a href="{{ url_for('assignment_details', assignment_id=assignment.assignment_id) }}"
+                           class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                            Update Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

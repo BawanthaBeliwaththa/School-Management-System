@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Grade Assignment - {{ assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Grade Assignment</h1>
+        <p class="text-gray-600 dark:text-gray-300">{{ assignment.course_name }} - {{ assignment.title }}</p>
+        <p class="text-gray-600 dark:text-gray-300">Max Marks: {{ assignment.max_marks }}</p>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Student Submissions</h2>
+        </div>
+        
+        <div class="p-6">
+            <form method="POST">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Student</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Submission Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Marks Obtained</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for submission in submissions %}
+                            <tr>
+                                <td class="px-4 py-3">
+                                    <div class="text-sm font-medium text-gray-800 dark:text-white">{{ submission.name }}</div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">{{ submission.roll_no }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-800 dark:text-white">
+                                    {{ submission.submission_date|datetimeformat('%Y-%m-%d %H:%M') }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full
+                                        {% if submission.marks_obtained is not none %}bg-green-100 text-green-800
+                                        {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                        {{ 'Graded' if submission.marks_obtained is not none else 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <input type="number" name="marks_{{ submission.submission_id }}"
+                                           value="{{ submission.marks_obtained or '' }}"
+                                           min="0" max="{{ assignment.max_marks }}" step="0.5"
+                                           class="w-24 px-3 py-1 border rounded text-sm dark:bg-gray-700 dark:text-white">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 ml-1">/{{ assignment.max_marks }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <textarea name="feedback_{{ submission.submission_id }}"
+                                              rows="2" class="w-48 px-3 py-1 border rounded text-sm dark:bg-gray-700 dark:text-white"
+                                              placeholder="Feedback">{{ submission.feedback or '' }}</textarea>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if submissions %}
+                <div class="flex justify-end mt-8">
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                        Save Grades
+                    </button>
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                    <p class="text-gray-600 dark:text-gray-400">No submissions yet</p>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

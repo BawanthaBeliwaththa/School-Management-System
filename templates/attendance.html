@@ -1,0 +1,538 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-clipboard-check mr-3"></i>Attendance Management
+                    </h1>
+                    <p class="text-gray-600">Mark and manage student attendance</p>
+                </div>
+                
+                <!-- Current Date Display -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg shadow-lg">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold" id="currentDate">{{ current_date }}</div>
+                        <div class="text-sm opacity-90" id="currentDay">{{ current_day }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Present Today</p>
+                            <p class="text-2xl font-bold">89%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Absent Today</p>
+                            <p class="text-2xl font-bold">8</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Late Today</p>
+                            <p class="text-2xl font-bold">3</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">School Days</p>
+                            <p class="text-2xl font-bold">24/30</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Selection Criteria -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 animate__animated animate__fadeInUp">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-search text-blue-600"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Select Criteria</h2>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+                    <button class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="form1" action="{{ url_for('getClassAttendance')}}" method="post" accept-charset="utf-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Class Selection -->
+                    <div class="group">
+                        <label for="classid" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-school mr-2"></i>Class*
+                        </label>
+                        <select id="classid" name="classid" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400 appearance-none" required>
+                            <option value="">Select Class</option>
+                            {% for class in classes %}								
+                                <option value="{{class.id}}" {% if class.id == classId %} selected {% endif %}>{{class.name}}</option>				
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Section Selection -->
+                    <div class="group">
+                        <label for="sectionid" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-layer-group mr-2"></i>Section*
+                        </label>
+                        <select name="sectionid" id="sectionid" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400 appearance-none" required>
+                            <option value="">Select Section</option>
+                            {% for section in sections %}
+                                <option value="{{section.section_id}}" {% if section.section_id == sectionId %} selected {% endif %}>{{section.section}}</option>	
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Date Selection -->
+                    <div class="group">
+                        <label for="attendanceDate" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-calendar-day mr-2"></i>Date*
+                        </label>
+                        <input type="date" id="attendanceDate" name="attendanceDate" 
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                               value="{{ current_date }}" required>
+                    </div>
+                </div>
+                
+                <!-- Search Button -->
+                <div class="mt-6 flex items-center justify-center">
+                    <button type="submit" id="search" name="search" value="search"
+                            class="ripple bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-search mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                        Search Students
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Attendance Table -->
+        {% if students %}
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden animate__animated animate__fadeInUp">
+            <!-- Table Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Student Attendance</h2>
+                        <p class="text-sm text-gray-600">Class {{ classId }} • Section {{ sectionId }}</p>
+                    </div>
+                    <button id="saveAttendance" name="saveAttendance" value="Save Attendance"
+                            class="ripple bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-save mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                        Save Attendance
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Attendance Form -->
+            <form id="attendanceForm" method="post" class="p-6">
+                <div id="message" class="mb-4"></div>
+                
+                <!-- Legend -->
+                <div class="mb-6">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                            <span class="text-sm text-gray-700">Present</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+                            <span class="text-sm text-gray-700">Late</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                            <span class="text-sm text-gray-700">Absent</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                            <span class="text-sm text-gray-700">Half Day</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Students List -->
+                <div class="space-y-4">
+                    {% for student in students %}
+                    <div class="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-white transition-all duration-300 hover-lift hover:shadow-md animate-on-scroll" style="animation-delay: {{ loop.index0 * 50 }}ms">
+                        <!-- Student Info -->
+                        <div class="flex-1">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold mr-4">
+                                    {{ student.name[0] if student.name else 'S' }}
+                                </div>
+                                <div>
+                                    <div class="flex items-center">
+                                        <h3 class="font-bold text-gray-900">{{ student.name }}</h3>
+                                        <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">#{{ student.roll_no }}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Reg No: {{ student.admission_no }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Attendance Options -->
+                        <div class="flex items-center space-x-4">
+                            <!-- Present -->
+                            <div class="relative">
+                                <input type="radio" id="attendencetype1_{{student.id}}" value="1" name="attendencetype_{{student.id}}" 
+                                       class="hidden peer" {% if student.attendance_status == '1' %}checked{% endif %}>
+                                <label for="attendencetype1_{{student.id}}" 
+                                       class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-transparent peer-checked:border-green-500 peer-checked:bg-green-50 cursor-pointer hover:bg-green-50 transition-all duration-300 group">
+                                    <i class="fas fa-check text-green-600 group-hover:scale-110 transition-transform duration-300"></i>
+                                </label>
+                                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 peer-checked:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    Present
+                                </div>
+                            </div>
+                            
+                            <!-- Late -->
+                            <div class="relative">
+                                <input type="radio" id="attendencetype2_{{student.id}}" value="2" name="attendencetype_{{student.id}}" 
+                                       class="hidden peer" {% if student.attendance_status == '2' %}checked{% endif %}>
+                                <label for="attendencetype2_{{student.id}}" 
+                                       class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-transparent peer-checked:border-yellow-500 peer-checked:bg-yellow-50 cursor-pointer hover:bg-yellow-50 transition-all duration-300 group">
+                                    <i class="fas fa-clock text-yellow-600 group-hover:scale-110 transition-transform duration-300"></i>
+                                </label>
+                                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 peer-checked:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    Late
+                                </div>
+                            </div>
+                            
+                            <!-- Absent -->
+                            <div class="relative">
+                                <input type="radio" id="attendencetype3_{{student.id}}" value="3" name="attendencetype_{{student.id}}" 
+                                       class="hidden peer" {% if student.attendance_status == '3' %}checked{% endif %}>
+                                <label for="attendencetype3_{{student.id}}" 
+                                       class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-transparent peer-checked:border-red-500 peer-checked:bg-red-50 cursor-pointer hover:bg-red-50 transition-all duration-300 group">
+                                    <i class="fas fa-times text-red-600 group-hover:scale-110 transition-transform duration-300"></i>
+                                </label>
+                                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 peer-checked:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    Absent
+                                </div>
+                            </div>
+                            
+                            <!-- Half Day -->
+                            <div class="relative">
+                                <input type="radio" id="attendencetype4_{{student.id}}" value="4" name="attendencetype_{{student.id}}" 
+                                       class="hidden peer" {% if student.attendance_status == '4' %}checked{% endif %}>
+                                <label for="attendencetype4_{{student.id}}" 
+                                       class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-50 cursor-pointer hover:bg-blue-50 transition-all duration-300 group">
+                                    <i class="fas fa-sun text-blue-600 group-hover:scale-110 transition-transform duration-300"></i>
+                                </label>
+                                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 peer-checked:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                    Half Day
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Hidden Fields -->
+                <input type="hidden" name="action" id="action" value="updateAttendance" />
+                <input type="hidden" name="att_classid" id="att_classid" value="{{ classId }}" />
+                <input type="hidden" name="att_sectionid" id="att_sectionid" value="{{ sectionId }}" />
+                
+                <!-- Bulk Actions -->
+                <div class="mt-6 flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+                    <div class="flex items-center space-x-4">
+                        <button type="button" onclick="markAll('1')" 
+                                class="ripple px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-300">
+                            <i class="fas fa-check mr-2"></i>Mark All Present
+                        </button>
+                        <button type="button" onclick="markAll('3')" 
+                                class="ripple px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-300">
+                            <i class="fas fa-times mr-2"></i>Mark All Absent
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span id="presentCount">0</span> Present • 
+                        <span id="absentCount">0</span> Absent • 
+                        <span id="totalCount">{{ students|length }}</span> Total
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Attendance Summary -->
+        {% if students %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <!-- Attendance Chart -->
+            <div class="bg-white rounded-2xl p-6 shadow-xl animate__animated animate__fadeInLeft">
+                <h3 class="text-xl font-bold mb-4 gradient-text">Attendance Summary</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-green-600">Present</span>
+                            <span class="font-bold" id="presentPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="presentBar" class="bg-green-500 h-2 rounded-full progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-yellow-600">Late</span>
+                            <span class="font-bold" id="latePercent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="lateBar" class="bg-yellow-500 h-2 rounded-full progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium text-red-600">Absent</span>
+                            <span class="font-bold" id="absentPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="absentBar" class="bg-red-500 h-2 rounded-full progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Attendance -->
+            <div class="bg-white rounded-2xl p-6 shadow-xl animate__animated animate__fadeInRight">
+                <h3 class="text-xl font-bold mb-4 gradient-text">Recent Attendance</h3>
+                <div class="space-y-3">
+                    {% for i in range(5) %}
+                    <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors duration-300">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-calendar-check text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium">Class {{ i + 1 }}A</p>
+                            <p class="text-sm text-gray-600">Yesterday • 92% attendance</p>
+                        </div>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Good
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update current date and time
+            function updateDateTime() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = now.toLocaleDateString('en-US', options);
+                const dayStr = now.toLocaleDateString('en-US', { weekday: 'long' });
+                
+                document.getElementById('currentDate').textContent = dateStr;
+                document.getElementById('currentDay').textContent = dayStr;
+            }
+            
+            // Update every minute
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+            
+            // Set today's date as default for attendance date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceDate').value = today;
+            
+            // Attendance radio button interactions
+            const attendanceRadios = document.querySelectorAll('input[type="radio"][name^="attendencetype_"]');
+            attendanceRadios.forEach(radio => {
+                radio.addEventListener('change', updateAttendanceSummary);
+            });
+            
+            // Initialize attendance summary
+            updateAttendanceSummary();
+            
+            // Form submission
+            document.getElementById('attendanceForm')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                showSuccessMessage('Attendance saved successfully!');
+            });
+            
+            // Search form submission animation
+            document.getElementById('form1')?.addEventListener('submit', function(e) {
+                const searchBtn = document.getElementById('search');
+                searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Searching...';
+                searchBtn.disabled = true;
+                
+                setTimeout(() => {
+                    searchBtn.innerHTML = '<i class="fas fa-search mr-2"></i> Search Students';
+                    searchBtn.disabled = false;
+                }, 2000);
+            });
+        });
+        
+        function updateAttendanceSummary() {
+            const total = {{ students|length if students else 0 }};
+            let present = 0, late = 0, absent = 0, halfDay = 0;
+            
+            // Count attendance statuses
+            document.querySelectorAll('input[type="radio"][name^="attendencetype_"]:checked').forEach(radio => {
+                switch(radio.value) {
+                    case '1': present++; break;
+                    case '2': late++; break;
+                    case '3': absent++; break;
+                    case '4': halfDay++; break;
+                }
+            });
+            
+            // Update counts
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('absentCount').textContent = absent;
+            document.getElementById('totalCount').textContent = total;
+            
+            // Calculate percentages
+            const presentPercent = total > 0 ? Math.round((present / total) * 100) : 0;
+            const latePercent = total > 0 ? Math.round((late / total) * 100) : 0;
+            const absentPercent = total > 0 ? Math.round((absent / total) * 100) : 0;
+            
+            // Update percentages
+            document.getElementById('presentPercent').textContent = presentPercent + '%';
+            document.getElementById('latePercent').textContent = latePercent + '%';
+            document.getElementById('absentPercent').textContent = absentPercent + '%';
+            
+            // Update progress bars with animation
+            const presentBar = document.getElementById('presentBar');
+            const lateBar = document.getElementById('lateBar');
+            const absentBar = document.getElementById('absentBar');
+            
+            if (presentBar) presentBar.style.width = presentPercent + '%';
+            if (lateBar) lateBar.style.width = latePercent + '%';
+            if (absentBar) absentBar.style.width = absentPercent + '%';
+        }
+        
+        function markAll(status) {
+            const radios = document.querySelectorAll('input[type="radio"][name^="attendencetype_"]');
+            radios.forEach(radio => {
+                if (radio.value === status) {
+                    radio.checked = true;
+                    // Trigger change event
+                    radio.dispatchEvent(new Event('change'));
+                }
+            });
+            
+            // Visual feedback
+            const messageDiv = document.getElementById('message');
+            if (messageDiv) {
+                const statusText = status === '1' ? 'Present' : 
+                                 status === '2' ? 'Late' : 
+                                 status === '3' ? 'Absent' : 'Half Day';
+                messageDiv.innerHTML = `
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg flex items-center animate__animated animate__fadeInDown">
+                        <i class="fas fa-check-circle mr-3"></i>
+                        <span>All students marked as ${statusText}</span>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 3000);
+            }
+        }
+        
+        function showSuccessMessage(text) {
+            const messageDiv = document.getElementById('message');
+            if (messageDiv) {
+                messageDiv.innerHTML = `
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg flex items-center animate__animated animate__fadeInDown">
+                        <i class="fas fa-check-circle mr-3"></i>
+                        <span>${text}</span>
+                    </div>
+                `;
+                
+                // Add confetti effect
+                createConfetti();
+                
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        function createConfetti() {
+            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+                confetti.style.opacity = '0.8';
+                confetti.style.zIndex = '9999';
+                confetti.style.pointerEvents = 'none';
+                
+                document.body.appendChild(confetti);
+                
+                // Animation
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                });
+                
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+        
+        // Add hover effects to attendance options
+        const attendanceLabels = document.querySelectorAll('label[for^="attendencetype"]');
+        attendanceLabels.forEach(label => {
+            label.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            
+            label.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

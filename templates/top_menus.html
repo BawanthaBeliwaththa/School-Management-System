@@ -1,0 +1,85 @@
+<!-- Floating Elements -->
+<div class="floating-elements fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+    <div class="absolute top-1/4 left-1/4 w-6 h-6 bg-blue-400 rounded-full opacity-20 animate-bounce" style="animation-delay: 0.2s;"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-8 h-8 bg-purple-400 rounded-full opacity-20 animate-bounce" style="animation-delay: 0.5s;"></div>
+</div>
+
+<!-- Top Navigation -->
+<div class="top-nav-fixed bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+    <div class="container mx-auto px-4 sm:px-6 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Mobile Menu Toggle -->
+            <button onclick="toggleSidebar()" class="md:hidden text-white">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            
+            <!-- Date/Time Info -->
+            <div class="flex-1 ml-4 md:ml-0">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-alt mr-2 text-blue-200"></i>
+                        <span id="currentDateTime" class="text-sm font-medium">{{ current_datetime }}</span>
+                    </div>
+                    <div class="hidden md:flex items-center">
+                        <i class="fas fa-user-graduate mr-2 text-blue-200"></i>
+                        <span class="text-sm font-medium">Academic Year: 2025-2026</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- Quick Actions Dropdown -->
+                <div class="relative group">
+                    <button class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 hidden group-hover:block">
+                        <a href="{{ url_for('courses') }}" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50">
+                            <i class="fas fa-plus text-blue-600 mr-2"></i> New Course
+                        </a>
+                        <a href="{{ url_for('assignments') }}" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50">
+                            <i class="fas fa-tasks text-green-600 mr-2"></i> New Assignment
+                        </a>
+                        <a href="{{ url_for('announcements') }}" class="flex items-center px-4 py-2 text-gray-800 hover:bg-blue-50">
+                            <i class="fas fa-bullhorn text-purple-600 mr-2"></i> New Announcement
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Notifications -->
+                <div class="relative">
+                    <a href="{{ url_for('notifications') }}" class="relative">
+                        <i class="fas fa-bell text-xl text-white"></i>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center animate-pulse">0</span>
+                    </a>
+                </div>
+                
+                <!-- User Profile -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2">
+                        <div class="relative">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                                {{ session.name[0] if session.name else 'U' }}
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        <div class="hidden md:block text-left">
+                            <p class="text-sm font-medium text-white">{{ session.name or 'User' }}</p>
+                            <p class="text-xs text-blue-200">{{ session.role|title }}</p>
+                        </div>
+                        <i class="fas fa-chevron-down text-white text-sm"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 hidden group-hover:block">
+                        <div class="border-t my-1"></div>
+                        <a href="{{ url_for('logout') }}" class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

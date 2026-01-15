@@ -1,0 +1,460 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Animated Background -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
+        
+        <!-- Header Section -->
+        <div class="relative z-10 mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-bullhorn mr-3"></i>Announcements
+                    </h1>
+                    <p class="text-gray-600">Stay updated with important notices and news</p>
+                </div>
+                
+                {% if session.role == 'teacher' or session.role == 'administrator' %}
+                <button id="addAnnouncement" 
+                        class="ripple bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    New Announcement
+                </button>
+                {% endif %}
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-bullhorn text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Announcements</p>
+                            <p class="text-2xl font-bold">{{ announcements|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-school text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">School Wide</p>
+                            <p class="text-2xl font-bold">
+                                {{ announcements|selectattr('type', 'equalto', 'school')|list|length }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-book text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Course Specific</p>
+                            <p class="text-2xl font-bold">
+                                {{ announcements|selectattr('type', 'equalto', 'course')|list|length }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-history text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">This Week</p>
+                            <p class="text-2xl font-bold">
+                                {{ announcements|selectattr('created_at', 'recent', 7)|list|length }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Announcements Timeline -->
+        <div class="relative z-10">
+            <!-- Timeline Container -->
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-gradient-to-b from-purple-500 to-pink-500"></div>
+                
+                <!-- Announcements -->
+                {% for announcement in announcements %}
+                <div class="relative mb-8 animate-on-scroll" style="animation-delay: {{ loop.index0 * 100 }}ms">
+                    <!-- Timeline Dot -->
+                    <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 border-4 border-white shadow-lg"></div>
+                    
+                    <!-- Content Card -->
+                    <div class="ml-12 md:ml-0 md:w-5/12 {% if loop.index % 2 == 0 %}md:ml-auto{% endif %}">
+                        <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift transition-all duration-300">
+                            <!-- Card Header -->
+                            <div class="p-6 border-b border-gray-200">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <div class="w-10 h-10 rounded-full {% if announcement.type == 'school' %}bg-blue-100 text-blue-600{% elif announcement.type == 'course' %}bg-green-100 text-green-600{% else %}bg-purple-100 text-purple-600{% endif %} flex items-center justify-center mr-3">
+                                                <i class="fas {% if announcement.type == 'school' %}fa-school{% elif announcement.type == 'course' %}fa-book{% else %}fa-bullhorn{% endif %}"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-bold text-gray-900">{{ announcement.title }}</h3>
+                                                <div class="flex items-center space-x-3 text-sm text-gray-600">
+                                                    <span>
+                                                        <i class="fas fa-user mr-1"></i>{{ announcement.created_by_name }}
+                                                    </span>
+                                                    <span>
+                                                        <i class="fas fa-clock mr-1"></i>{{ announcement.created_at|timeago }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Course Badge -->
+                                        {% if announcement.course_name %}
+                                        <div class="inline-block">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-green-50 text-green-800 border border-green-200">
+                                                <i class="fas fa-book mr-1"></i>{{ announcement.course_name }}
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Priority Badge -->
+                                    <div class="flex-shrink-0 ml-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium {% if announcement.type == 'school' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ announcement.type|title }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Announcement Content -->
+                                <p class="text-gray-700 whitespace-pre-line">{{ announcement.content }}</p>
+                            </div>
+                            
+                            <!-- Card Footer -->
+                            <div class="p-4 bg-gray-50 flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <button class="ripple flex items-center text-gray-600 hover:text-purple-600 transition-colors duration-300 group">
+                                        <i class="fas fa-thumbs-up mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span class="text-sm">Like (24)</span>
+                                    </button>
+                                    <button class="ripple flex items-center text-gray-600 hover:text-purple-600 transition-colors duration-300 group">
+                                        <i class="fas fa-comment mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span class="text-sm">Comment</span>
+                                    </button>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="flex items-center space-x-2">
+                                    {% if session.role == 'teacher' or session.role == 'administrator' %}
+                                    <button class="ripple w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors duration-300 group">
+                                        <i class="fas fa-edit text-sm group-hover:rotate-12 transition-transform duration-300"></i>
+                                    </button>
+                                    <button class="ripple w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-300 group">
+                                        <i class="fas fa-trash-alt text-sm group-hover:scale-110 transition-transform duration-300"></i>
+                                    </button>
+                                    {% endif %}
+                                    
+                                    <button class="ripple w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-colors duration-300 group">
+                                        <i class="fas fa-share text-sm group-hover:scale-110 transition-transform duration-300"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Empty State -->
+                {% if not announcements %}
+                <div class="text-center py-12 animate__animated animate__fadeIn">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
+                        <i class="fas fa-bullhorn text-gray-400 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-700 mb-2">No Announcements Yet</h3>
+                    <p class="text-gray-600 mb-6">Check back later for important updates and notices</p>
+                    {% if session.role == 'teacher' or session.role == 'administrator' %}
+                    <button id="addAnnouncementEmpty" 
+                            class="ripple bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus mr-2"></i>Create First Announcement
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Announcement Modal -->
+    <div id="announcementModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="announcementModalTitle">
+                        <i class="fas fa-plus mr-2"></i>Create New Announcement
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeAnnouncementModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="announcementForm" action="{{ url_for('announcements') }}" class="p-6">
+                <div class="space-y-4">
+                    <!-- Title -->
+                    <div class="group">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-heading mr-2"></i>Announcement Title*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" 
+                               id="title" name="title" placeholder="Enter announcement title" required>
+                    </div>
+                    
+                    <!-- Type -->
+                    <div class="group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-tag mr-2"></i>Announcement Type*
+                        </label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="relative">
+                                <input type="radio" id="type_school" name="type" value="school" 
+                                       class="hidden peer" checked>
+                                <label for="type_school" 
+                                       class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-blue-50 transition-all duration-300 group">
+                                    <i class="fas fa-school text-blue-600 text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-medium">School</span>
+                                </label>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="radio" id="type_course" name="type" value="course" 
+                                       class="hidden peer">
+                                <label for="type_course" 
+                                       class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-green-50 transition-all duration-300 group">
+                                    <i class="fas fa-book text-green-600 text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-medium">Course</span>
+                                </label>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="radio" id="type_general" name="type" value="general" 
+                                       class="hidden peer">
+                                <label for="type_general" 
+                                       class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:bg-purple-50 transition-all duration-300 group">
+                                    <i class="fas fa-bullhorn text-purple-600 text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-medium">General</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course Selection (if type is course) -->
+                    <div class="group hidden" id="courseSelection">
+                        <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-book mr-2"></i>Select Course*
+                        </label>
+                        <select name="course_id" id="course_id" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400">
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="group">
+                        <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-align-left mr-2"></i>Announcement Content*
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" 
+                                  rows="6" id="content" name="content" placeholder="Write your announcement here..." required></textarea>
+                    </div>
+                    
+                    <!-- Priority -->
+                    <div class="group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-exclamation-circle mr-2"></i>Priority Level
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <input type="radio" id="priority_low" name="priority" value="low" 
+                                       class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300" checked>
+                                <label for="priority_low" class="ml-2 block text-sm text-gray-700">
+                                    <span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">Low</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="priority_medium" name="priority" value="medium" 
+                                       class="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300">
+                                <label for="priority_medium" class="ml-2 block text-sm text-gray-700">
+                                    <span class="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">Medium</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="priority_high" name="priority" value="high" 
+                                       class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300">
+                                <label for="priority_high" class="ml-2 block text-sm text-gray-700">
+                                    <span class="px-2 py-1 rounded text-xs bg-red-100 text-red-800">High</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeAnnouncementModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-paper-plane mr-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                        Publish Announcement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Announcement Modal
+            document.getElementById('addAnnouncement')?.addEventListener('click', openAnnouncementModal);
+            document.getElementById('addAnnouncementEmpty')?.addEventListener('click', openAnnouncementModal);
+            
+            // Show/hide course selection based on type
+            const typeRadios = document.querySelectorAll('input[name="type"]');
+            const courseSelection = document.getElementById('courseSelection');
+            const courseSelect = document.getElementById('course_id');
+            
+            typeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'course') {
+                        courseSelection.classList.remove('hidden');
+                        courseSelect.required = true;
+                    } else {
+                        courseSelection.classList.add('hidden');
+                        courseSelect.required = false;
+                    }
+                });
+            });
+            
+            // Timeline animations
+            const timelineItems = document.querySelectorAll('.animate-on-scroll');
+            timelineItems.forEach((item, index) => {
+                // Add stagger animation
+                item.style.animationDelay = `${index * 100}ms`;
+                
+                // Animate timeline dots
+                const dot = item.querySelector('.rounded-full');
+                if (dot) {
+                    dot.style.transform = 'scale(0)';
+                    setTimeout(() => {
+                        dot.style.transform = 'scale(1)';
+                        dot.style.transition = 'transform 0.5s ease-out';
+                    }, 300 + (index * 100));
+                }
+            });
+            
+            // Like button animation
+            const likeButtons = document.querySelectorAll('.fa-thumbs-up').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    this.classList.toggle('text-purple-600');
+                    this.classList.toggle('animate-pulse');
+                    
+                    // Reset animation after 1 second
+                    setTimeout(() => {
+                        this.classList.remove('animate-pulse');
+                    }, 1000);
+                });
+            });
+        });
+        
+        function openAnnouncementModal() {
+            const modal = document.getElementById('announcementModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeAnnouncementModal() {
+            const modal = document.getElementById('announcementModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('announcementModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAnnouncementModal();
+            }
+        });
+        
+        // Textarea character counter
+        const contentTextarea = document.getElementById('content');
+        if (contentTextarea) {
+            const counter = document.createElement('div');
+            counter.className = 'text-right text-sm text-gray-500 mt-1';
+            contentTextarea.parentNode.appendChild(counter);
+            
+            contentTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                counter.textContent = `${length}/1000 characters`;
+                
+                if (length > 1000) {
+                    counter.classList.add('text-red-600');
+                    counter.classList.remove('text-gray-500');
+                } else {
+                    counter.classList.remove('text-red-600');
+                    counter.classList.add('text-gray-500');
+                }
+            });
+            
+            // Trigger initial count
+            contentTextarea.dispatchEvent(new Event('input'));
+        }
+        
+        // Auto-expand textarea
+        function autoExpand(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+        
+        if (contentTextarea) {
+            contentTextarea.addEventListener('input', function() {
+                autoExpand(this);
+            });
+            autoExpand(contentTextarea);
+        }
+    </script>
+</body>
+</html>

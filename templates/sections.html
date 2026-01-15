@@ -1,0 +1,342 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-layer-group mr-3"></i>Sections Management
+                    </h1>
+                    <p class="text-gray-600">Manage class sections and divisions</p>
+                </div>
+                <button id="addSection" 
+                        class="ripple bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-lg font-medium hover:from-orange-700 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Add New Section
+                </button>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-layer-group text-orange-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Sections</p>
+                            <p class="text-2xl font-bold">{{ sections|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Students</p>
+                            <p class="text-2xl font-bold">245</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Teachers</p>
+                            <p class="text-2xl font-bold">18</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-school text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Classes</p>
+                            <p class="text-2xl font-bold">12</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sections Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for section in sections %}
+            <div class="group">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift hover:shadow-2xl transition-all duration-500 animate-on-scroll" style="animation-delay: {{ loop.index0 * 100 }}ms">
+                    <!-- Section Header -->
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">{{ section.section }}</h3>
+                                <p class="text-sm text-gray-600">Section ID: {{ section.section_id }}</p>
+                            </div>
+                            <div class="relative">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center text-white text-lg font-bold">
+                                    {{ section.section }}
+                                </div>
+                                <!-- Active Indicator -->
+                                <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section Description -->
+                        <p class="text-gray-600 text-sm mb-4">
+                            Class {{ section.section }} focuses on comprehensive learning with dedicated faculty.
+                        </p>
+                        
+                        <!-- Section Stats -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                <div class="text-lg font-bold text-blue-600">42</div>
+                                <div class="text-xs text-gray-500">Students</div>
+                            </div>
+                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                <div class="text-lg font-bold text-green-600">3</div>
+                                <div class="text-xs text-gray-500">Teachers</div>
+                            </div>
+                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                <div class="text-lg font-bold text-purple-600">94%</div>
+                                <div class="text-xs text-gray-500">Attendance</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Section Footer -->
+                    <div class="p-6 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+                                    <i class="fas fa-user-tie text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Class Teacher</p>
+                                    <p class="text-sm font-medium">Mr. Johnson</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center space-x-2">
+                                <a href="{{url_for('edit_sections', section_id=section.section_id)}}" 
+                                   class="ripple w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors duration-300 group">
+                                    <i class="fas fa-edit group-hover:rotate-12 transition-transform duration-300"></i>
+                                </a>
+                                <a href="{{url_for('delete_sections', section_id=section.section_id)}}" 
+                                   class="ripple w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-300 group">
+                                    <i class="fas fa-trash-alt group-hover:scale-110 transition-transform duration-300"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hover Effect Line -->
+                <div class="h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-b-lg mx-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Add Section Modal -->
+    <div id="sectionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="sectionModalTitle">
+                        <i class="fas fa-plus mr-2"></i>Add New Section
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeSectionModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="sectionForm" action="{{ url_for('save_sections')}}" class="p-6">
+                <div class="space-y-4">
+                    <!-- Section Name -->
+                    <div class="group">
+                        <label for="section_name" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                            <i class="fas fa-layer-group mr-2"></i>Section Name*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 group-hover:border-orange-400" 
+                               id="section_name" name="section_name" placeholder="Enter section name" required>
+                    </div>
+                    
+                    <!-- Class Assignment -->
+                    <div class="group">
+                        <label for="class_assignment" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                            <i class="fas fa-school mr-2"></i>Assign to Class
+                        </label>
+                        <select id="class_assignment" name="class_assignment" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 group-hover:border-orange-400">
+                            <option value="">Select Class (Optional)</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Capacity -->
+                    <div class="group">
+                        <label for="capacity" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                            <i class="fas fa-users mr-2"></i>Student Capacity
+                        </label>
+                        <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 group-hover:border-orange-400" 
+                               id="capacity" name="capacity" placeholder="Maximum students" min="1" max="50" value="40">
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="group">
+                        <label for="section_description" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                            <i class="fas fa-align-left mr-2"></i>Description
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300 group-hover:border-orange-400" 
+                                  rows="3" id="section_description" name="section_description" placeholder="Brief description of the section..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Hidden Fields -->
+                <input type="hidden" name="sectionid" id="sectionid" />
+                <input type="hidden" name="action" id="action" value="" />
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeSectionModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" id="save" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-plus-circle mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                        Create Section
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Section Modal
+            document.getElementById('addSection').addEventListener('click', function() {
+                openSectionModal('add');
+            });
+            
+            // Section card animations
+            const sectionCards = document.querySelectorAll('.group');
+            sectionCards.forEach((card, index) => {
+                // Add stagger animation
+                card.style.animationDelay = `${index * 100}ms`;
+                
+                // Hover effect
+                card.addEventListener('mouseenter', function() {
+                    const innerCard = this.querySelector('.bg-white');
+                    if (innerCard) {
+                        innerCard.style.transform = 'translateY(-10px)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    const innerCard = this.querySelector('.bg-white');
+                    if (innerCard) {
+                        innerCard.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+            
+            // Auto-generate section ID
+            const sectionNameInput = document.getElementById('section_name');
+            if (sectionNameInput) {
+                sectionNameInput.addEventListener('input', function() {
+                    const sectionIdPreview = document.getElementById('section_id_preview');
+                    if (sectionIdPreview) {
+                        const id = this.value.substring(0, 3).toUpperCase() + (Math.floor(Math.random() * 1000));
+                        sectionIdPreview.textContent = `ID: ${id}`;
+                    }
+                });
+            }
+        });
+        
+        function openSectionModal(action, sectionData = null) {
+            const modal = document.getElementById('sectionModal');
+            const title = document.getElementById('sectionModalTitle');
+            const form = document.getElementById('sectionForm');
+            
+            if (action === 'add') {
+                title.innerHTML = '<i class="fas fa-plus mr-2"></i>Add New Section';
+                form.reset();
+                document.getElementById('action').value = 'addSection';
+                document.getElementById('save').innerHTML = '<i class="fas fa-plus-circle mr-2 group-hover:rotate-90 transition-transform duration-300"></i>Create Section';
+            } else if (action === 'edit') {
+                title.innerHTML = '<i class="fas fa-edit mr-2"></i>Edit Section';
+                // Populate form with sectionData
+                document.getElementById('action').value = 'updateSection';
+                document.getElementById('save').textContent = 'Update Section';
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSectionModal() {
+            const modal = document.getElementById('sectionModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('sectionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSectionModal();
+            }
+        });
+        
+        // Add visual feedback for form inputs
+        const formInputs = document.querySelectorAll('#sectionForm input, #sectionForm select, #sectionForm textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('ring-2', 'ring-orange-200', 'rounded-lg');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('ring-2', 'ring-orange-200');
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.value) {
+                    this.classList.add('border-orange-500');
+                } else {
+                    this.classList.remove('border-orange-500');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

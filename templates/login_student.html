@@ -1,0 +1,189 @@
+{% include 'header.html' %}
+<body class="bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen flex items-center justify-center">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        <div class="absolute top-1/4 left-1/4 w-8 h-8 bg-blue-400 rounded-full opacity-20 animate-bounce" style="animation-delay: 0.2s;"></div>
+        <div class="absolute top-3/4 right-1/4 w-6 h-6 bg-purple-400 rounded-full opacity-20 animate-bounce" style="animation-delay: 0.5s;"></div>
+    </div>
+    
+    <!-- Login Container -->
+    <div class="relative z-10 w-full max-w-md mx-4">
+        <!-- Glass Morphism Card -->
+        <div class="glass rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-105">
+            <!-- Animated Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-center relative overflow-hidden">
+                <!-- Shimmer Effect -->
+                <div class="absolute inset-0 shimmer"></div>
+                
+                <!-- Logo -->
+                <div class="relative z-10">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                        <i class="fas fa-user-graduate text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white mb-2 animate__animated animate__fadeInDown">Student Portal</h1>
+                    <p class="text-blue-100 animate__animated animate__fadeInUp">Access your learning journey</p>
+                </div>
+                
+                <!-- Floating Icons -->
+                <div class="absolute top-4 left-4 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-book text-white/50"></i>
+                </div>
+                <div class="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white/50"></i>
+                </div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="p-8 bg-white/90 backdrop-blur-sm">
+                {% if mesage is defined and mesage %}
+                <div class="mb-6 animate__animated animate__shakeX">
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i>
+                        <span>{{ mesage }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <form action="{{ url_for('student_login') }}" method="post" class="space-y-6">
+                    <!-- Student ID -->
+                    <div class="group">
+                        <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-id-card mr-2"></i>Student ID / Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400 group-hover:text-blue-500 transition-colors duration-300"></i>
+                            </div>
+                            <input type="text" id="student_id" name="student_id" 
+                                   class="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400"
+                                   placeholder="Enter Student ID or Email" required>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <i class="fas fa-check-circle text-green-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="group">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-lock mr-2"></i>Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-key text-gray-400 group-hover:text-blue-500 transition-colors duration-300"></i>
+                            </div>
+                            <input type="password" id="password" name="password" 
+                                   class="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400"
+                                   placeholder="Enter your password" required>
+                            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePassword()">
+                                <i class="fas fa-eye text-gray-400 hover:text-blue-500 transition-colors duration-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember" name="remember" 
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-300">
+                            <label for="remember" class="ml-2 block text-sm text-gray-700 hover:text-blue-600 transition-colors duration-300 cursor-pointer">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-300 hover:underline">
+                            Forgot password?
+                        </a>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="w-full ripple bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group">
+                        <span class="group-hover:translate-x-2 transition-transform duration-300">Sign In as Student</span>
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition-transform duration-300"></i>
+                    </button>
+                    
+                    <!-- Demo Credentials -->
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100 animate-pulse">
+                        <p class="text-sm text-blue-800 font-medium mb-1">
+                            <i class="fas fa-info-circle mr-1"></i> Demo Student:
+                        </p>
+                        <p class="text-xs text-blue-600">ID: S2023001</p>
+                        <p class="text-xs text-blue-600">Password: student123</p>
+                    </div>
+                </form>
+                
+                <!-- Switch to Other Portals -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <p class="text-center text-gray-600 mb-4">Access other portals</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="{{ url_for('login_teacher') }}" 
+                           class="ripple flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-105 group">
+                            <i class="fas fa-chalkboard-teacher text-purple-500 mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                            <span>Teacher Login</span>
+                        </a>
+                        <a href="{{ url_for('login_parent') }}" 
+                           class="ripple flex items-center justify-center py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:scale-105 group">
+                            <i class="fas fa-users text-green-500 mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                            <span>Parent Login</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Features -->
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <div class="text-center p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                        <i class="fas fa-video text-blue-600 text-xl mb-2"></i>
+                        <p class="text-xs text-gray-700">Live Classes</p>
+                    </div>
+                    <div class="text-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+                        <i class="fas fa-tasks text-green-600 text-xl mb-2"></i>
+                        <p class="text-xs text-gray-700">Assignments</p>
+                    </div>
+                    <div class="text-center p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                        <i class="fas fa-question-circle text-purple-600 text-xl mb-2"></i>
+                        <p class="text-xs text-gray-700">Quizzes</p>
+                    </div>
+                    <div class="text-center p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg">
+                        <i class="fas fa-chart-line text-yellow-600 text-xl mb-2"></i>
+                        <p class="text-xs text-gray-700">Grades</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-6 text-gray-600 animate__animated animate__fadeInUp">
+            <p>Student Portal • Secure Learning Environment</p>
+            <p class="text-sm mt-2">Need help? <a href="#" class="text-blue-600 hover:underline">Contact Support</a></p>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = event.currentTarget.querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Add floating animation to login card
+        const loginCard = document.querySelector('.glass');
+        loginCard.classList.add('float');
+        loginCard.style.animation = 'float 6s ease-in-out infinite';
+        
+        // Auto-focus on student ID field
+        document.getElementById('student_id').focus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% include 'header.html' %}
+<script src="{{ url_for('static',filename='js/teaacher.js') }}"></script>
+<body>
+	{% include 'top_menus.html' %}
+	<div class="container">        
+		{% include 'left_menus.html' %}    
+		<div class="content">
+			<div class="container-fluid">   	
+				<div class="row">
+				<a href="#"><strong><span class="ti-crown"></span> Edit Teacher</strong></a>
+				<hr>
+				{% for teacher in teachers %}
+					<form method="post" id="teacherForm" action="{{ url_for('save_teacher')}}">			
+											
+						<div class="form-group">							
+							<label for="Techer" class="control-label">Techer</label>				
+							<input type="text" name="techer_name" id="techer_name" autocomplete="off" class="form-control" placeholder="techer name" value="{{teacher.teacher}}"/>										
+						</div>						
+						<div class="form-group">
+							<label for="Specialization" class="control-label">Specialization</label>				
+							<select class="form-control" id="specialization" name="specialization"/>
+								<option value="">--Select--</option>
+								{% for subject in subjects %}
+									<option value="{{subject.subject_id}}">{{subject.subject}}</option>		
+								{% endfor %}								
+							</select>							
+						</div>												
+						
+						<div class="modal-footer">
+							<input type="hidden" name="teacherid" id="teacherid" value="{{teacher.teacher_id}}" />						
+							<input type="hidden" name="action" id="action" value="updateTeacher" />
+							<input type="submit" name="save" id="save" class="btn btn-info" value="Save" />
+						</div>
+					
+					</form>
+				{% endfor %}						
+				</div>	
+			</div>
+		</div>	
+	</div> 
+</body>
+</html>

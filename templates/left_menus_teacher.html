@@ -1,0 +1,135 @@
+<!-- Teacher Navigation -->
+<div class="space-y-6">
+    <!-- Dashboard & Profile -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">TEACHER PORTAL</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('teacher_dashboard') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-emerald-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-tachometer-alt text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Teacher Dashboard</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('teacher_profile') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-user-circle text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">My Profile</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Teaching Management -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">TEACHING MANAGEMENT</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('my_classes') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-violet-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-violet-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-school text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-purple-600 transition-colors duration-300">My Classes</span>
+                    <span class="ml-auto px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">{{ my_classes_count|default('0') }}</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('my_students') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-user-graduate text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">My Students</span>
+                    <span class="ml-auto px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">{{ my_students_count|default('0') }}</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('add_class') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-emerald-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-plus text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Add New Class</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('add_course') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-amber-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-book-medical text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-yellow-600 transition-colors duration-300">Add New Course</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- LMS Features -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">LEARNING MANAGEMENT</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('assignments') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-emerald-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-tasks text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Assignments</span>
+                    <span class="ml-auto px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full animate-pulse">{{ assignments_to_grade|default('3') }}</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('attendance') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-amber-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-clipboard-check text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-yellow-600 transition-colors duration-300">Attendance</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('quizzes') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-question-circle text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-purple-600 transition-colors duration-300">Quizzes</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('online_classes') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-indigo-500/10 hover:to-blue-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-video text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-indigo-600 transition-colors duration-300">Online Classes</span>
+                    <span class="ml-auto px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">{{ live_classes|default('2') }} Live</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('gradebook') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-teal-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Gradebook</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('announcements') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-bullhorn text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">Announcements</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

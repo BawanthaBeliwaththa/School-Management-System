@@ -1,0 +1,698 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Animated Background -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
+        
+        <!-- Header Section -->
+        <div class="relative z-10 mb-8 animate__animated animate__fadeInDown">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-calendar-alt mr-3"></i>Academic Calendar
+                    </h1>
+                    <p class="text-gray-600">Track assignments, exams, and important dates</p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Add Event Button -->
+                    <button class="ripple bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group" onclick="openAddEventModal()">
+                        <i class="fas fa-plus mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                        <span class="hidden md:inline">Add Event</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Calendar Navigation -->
+            <div class="mt-6 bg-white rounded-xl shadow-lg p-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <button class="ripple w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors duration-300" id="prev-month">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        
+                        <h2 class="text-xl font-bold text-gray-800" id="current-month">
+                            {{ current_datetime.strftime('%B %Y') }}
+                        </h2>
+                        
+                        <button class="ripple w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors duration-300" id="next-month">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <button class="ripple px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300" id="today-btn">
+                            <i class="fas fa-calendar-day mr-2"></i>Today
+                        </button>
+                    </div>
+                    
+                    <!-- Filter Options -->
+                    <div class="flex flex-wrap items-center gap-4">
+                        <select class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" id="course-filter">
+                            <option value="all">All Courses</option>
+                            {% for course in courses %}
+                            <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <select class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" id="event-type-filter">
+                            <option value="all">All Events</option>
+                            <option value="assignment">Assignments</option>
+                            <option value="exam">Exams</option>
+                            <option value="holiday">Holidays</option>
+                            <option value="meeting">Meetings</option>
+                            <option value="deadline">Deadlines</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calendar Grid -->
+        <div class="relative z-10 bg-white rounded-2xl shadow-xl overflow-hidden animate__animated animate__fadeInUp mb-6">
+            <!-- Weekday Headers -->
+            <div class="grid grid-cols-7 border-b border-gray-200">
+                {% set weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
+                {% for day in weekdays %}
+                <div class="p-4 text-center font-medium text-gray-700 bg-gray-50">
+                    {{ day }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Calendar Days -->
+            <div class="grid grid-cols-7" id="calendar-grid">
+                <!-- Calendar days will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Upcoming Events Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-xl font-bold mb-4 gradient-text flex items-center">
+                <i class="fas fa-list-alt mr-2"></i>Upcoming Events
+            </h3>
+            
+            <div class="space-y-4" id="upcoming-events">
+                {% for event in upcoming_events %}
+                <div class="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors duration-300 
+                    {% if event.event_type == 'assignment' %}border-l-4 border-blue-500
+                    {% elif event.event_type == 'exam' %}border-l-4 border-red-500
+                    {% elif event.event_type == 'holiday' %}border-l-4 border-green-500
+                    {% else %}border-l-4 border-purple-500{% endif %}">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="px-2 py-1 text-xs rounded-full font-medium
+                                    {% if event.event_type == 'assignment' %}bg-blue-100 text-blue-700
+                                    {% elif event.event_type == 'exam' %}bg-red-100 text-red-700
+                                    {% elif event.event_type == 'holiday' %}bg-green-100 text-green-700
+                                    {% else %}bg-purple-100 text-purple-700{% endif %}">
+                                    {{ event.event_type|title }}
+                                </span>
+                                {% if event.course_name %}
+                                <span class="text-sm text-gray-600">
+                                    <i class="fas fa-book mr-1"></i>{{ event.course_name }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <h4 class="font-bold text-gray-900">{{ event.title }}</h4>
+                            {% if event.description %}
+                            <p class="text-gray-600 text-sm mt-1">{{ event.description }}</p>
+                            {% endif %}
+                            
+                            <div class="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="far fa-calendar mr-2"></i>
+                                    {% if event.event_date %}
+                                        {{ event.event_date.strftime('%b %d, %Y') }}
+                                    {% else %}
+                                        No date
+                                    {% endif %}
+                                </div>
+                                {% if event.event_time %}
+                                <div class="flex items-center">
+                                    <i class="far fa-clock mr-2"></i>
+                                    {{ event.event_time }}
+                                </div>
+                                {% endif %}
+                                {% if event.priority %}
+                                <span class="px-2 py-1 text-xs rounded
+                                    {% if event.priority == 'high' %}bg-red-100 text-red-700
+                                    {% elif event.priority == 'medium' %}bg-yellow-100 text-yellow-700
+                                    {% else %}bg-green-100 text-green-700{% endif %}">
+                                    {{ event.priority|title }} Priority
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            <button class="ripple p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-300"
+                                    onclick="viewEventDetails({{ event.id }})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            {% if session.role in ['teacher', 'admin'] %}
+                            <button class="ripple p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-300"
+                                    onclick="editEvent({{ event.id }})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="ripple p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-300"
+                                    onclick="deleteEvent({{ event.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-calendar-plus text-gray-400 text-2xl"></i>
+                    </div>
+                    <p class="text-gray-600">No upcoming events</p>
+                    <button class="mt-4 text-blue-600 hover:text-blue-700 font-medium" onclick="openAddEventModal()">
+                        <i class="fas fa-plus mr-2"></i>Add your first event
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Event Statistics -->
+        <div class="mt-6 bg-white rounded-2xl shadow-xl p-6">
+            <h3 class="text-xl font-bold mb-4 gradient-text">Event Statistics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-tasks text-blue-600 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-500">Assignments</p>
+                    <p class="text-3xl font-bold">{{ stats.assignments }}</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-red-100 flex items-center justify-center">
+                        <i class="fas fa-file-alt text-red-600 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-500">Exams</p>
+                    <p class="text-3xl font-bold">{{ stats.exams }}</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
+                        <i class="fas fa-umbrella-beach text-green-600 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-500">Holidays</p>
+                    <p class="text-3xl font-bold">{{ stats.holidays }}</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-purple-600 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-500">Total Events</p>
+                    <p class="text-3xl font-bold">{{ stats.total_events }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate__animated animate__fadeInUp">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-2xl font-bold gradient-text">
+                        <i class="fas fa-calendar-plus mr-2"></i>Add New Event
+                    </h3>
+                </div>
+                
+                <div class="p-6">
+                    <form id="eventForm">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Event Title *</label>
+                                <input type="text" name="title" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Event Type *</label>
+                                <select name="type" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                    <option value="">Select Type</option>
+                                    <option value="assignment">Assignment</option>
+                                    <option value="exam">Exam</option>
+                                    <option value="holiday">Holiday</option>
+                                    <option value="meeting">Meeting</option>
+                                    <option value="deadline">Deadline</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date *</label>
+                                    <input type="date" name="date" required
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                                           value="{{ current_datetime.strftime('%Y-%m-%d') }}">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                                    <input type="time" name="time"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                <textarea name="description" rows="3"
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                                <select name="course_id"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                    <option value="">Select Course</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                                <select name="priority"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="repeat" class="rounded text-blue-600 focus:ring-blue-500 mr-2">
+                                    <span class="text-sm text-gray-700">Repeat Event Weekly</span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="p-6 border-t border-gray-200 flex justify-end space-x-4">
+                    <button type="button" class="ripple px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300"
+                            onclick="closeAddEventModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="ripple px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                            onclick="saveEvent()">
+                        <i class="fas fa-save mr-2"></i>Save Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize calendar
+            initCalendar();
+            
+            // Set today's date in event form
+            const today = new Date();
+            document.querySelector('input[name="date"]').value = today.toISOString().split('T')[0];
+            
+            // Filter change events
+            document.getElementById('course-filter').addEventListener('change', filterEvents);
+            document.getElementById('event-type-filter').addEventListener('change', filterEvents);
+            
+            // Navigation buttons
+            document.getElementById('prev-month').addEventListener('click', prevMonth);
+            document.getElementById('next-month').addEventListener('click', nextMonth);
+            document.getElementById('today-btn').addEventListener('click', goToToday);
+        });
+        
+        // Calendar variables
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let events = [];
+        
+        function initCalendar() {
+            generateCalendar(currentMonth, currentYear);
+            updateMonthDisplay();
+            loadEvents();
+        }
+        
+        function generateCalendar(month, year) {
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const totalDays = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            // Previous month's days
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = 0; i < startingDay; i++) {
+                const day = prevMonthLastDay - startingDay + i + 1;
+                const date = new Date(year, month - 1, day);
+                calendarGrid.appendChild(createDayElement(day, date, 'prev-month'));
+            }
+            
+            // Current month's days
+            const today = new Date();
+            for (let day = 1; day <= totalDays; day++) {
+                const date = new Date(year, month, day);
+                const isToday = date.getDate() === today.getDate() && 
+                               date.getMonth() === today.getMonth() && 
+                               date.getFullYear() === today.getFullYear();
+                calendarGrid.appendChild(createDayElement(day, date, isToday ? 'today' : 'current-month'));
+            }
+            
+            // Next month's days
+            const totalCells = 42; // 6 weeks * 7 days
+            const remainingCells = totalCells - (startingDay + totalDays);
+            for (let i = 1; i <= remainingCells; i++) {
+                const date = new Date(year, month + 1, i);
+                calendarGrid.appendChild(createDayElement(i, date, 'next-month'));
+            }
+            
+            // Highlight events on calendar
+            highlightEvents();
+        }
+        
+        function createDayElement(day, date, className) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `min-h-24 p-2 border border-gray-200 ${className} calendar-day hover:bg-gray-50`;
+            dayDiv.dataset.date = date.toISOString().split('T')[0];
+            
+            // Day number
+            const dayNumber = document.createElement('div');
+            dayNumber.className = `text-right font-medium mb-1 ${
+                className === 'today' ? 'bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center ml-auto' : 
+                className.includes('month') ? 'text-gray-400' : 'text-gray-900'
+            }`;
+            dayNumber.textContent = day;
+            dayDiv.appendChild(dayNumber);
+            
+            // Events container
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = 'space-y-1 max-h-16 overflow-y-auto';
+            dayDiv.appendChild(eventsContainer);
+            
+            // Add click event to add event on this date
+            dayDiv.addEventListener('click', function() {
+                const selectedDate = this.dataset.date;
+                document.querySelector('input[name="date"]').value = selectedDate;
+                openAddEventModal();
+            });
+            
+            return dayDiv;
+        }
+        
+        function updateMonthDisplay() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            document.getElementById('current-month').textContent = 
+                `${monthNames[currentMonth]} ${currentYear}`;
+        }
+        
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar(currentMonth, currentYear);
+            updateMonthDisplay();
+        }
+        
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar(currentMonth, currentYear);
+            updateMonthDisplay();
+        }
+        
+        function goToToday() {
+            const today = new Date();
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+            generateCalendar(currentMonth, currentYear);
+            updateMonthDisplay();
+            loadEvents();
+        }
+        
+        function loadEvents() {
+            // Fetch events from API
+            fetch('/api/calendar_events')
+                .then(response => response.json())
+                .then(data => {
+                    events = data;
+                    highlightEvents();
+                })
+                .catch(error => {
+                    console.error('Error loading events:', error);
+                    events = [];
+                });
+        }
+        
+        function highlightEvents() {
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                const date = day.dataset.date;
+                const dayEvents = events.filter(event => {
+                    const eventDate = event.start.split('T')[0];
+                    return eventDate === date;
+                });
+                
+                const eventsContainer = day.querySelector('.space-y-1');
+                eventsContainer.innerHTML = '';
+                
+                dayEvents.forEach(event => {
+                    const eventBadge = document.createElement('div');
+                    eventBadge.className = `text-xs text-white px-2 py-1 rounded truncate cursor-pointer hover:opacity-90 ${event.color || 'bg-blue-500'}`;
+                    eventBadge.textContent = event.title;
+                    eventBadge.title = `${event.title}\n${event.extendedProps?.type || ''}\n${event.extendedProps?.course || ''}`;
+                    eventBadge.onclick = (e) => {
+                        e.stopPropagation();
+                        viewEventDetails(event.id);
+                    };
+                    eventsContainer.appendChild(eventBadge);
+                });
+            });
+        }
+        
+        function filterEvents() {
+            const courseFilter = document.getElementById('course-filter').value;
+            const typeFilter = document.getElementById('event-type-filter').value;
+            
+            // Reload events with filters
+            let url = '/api/calendar_events?';
+            if (courseFilter !== 'all') url += `course=${courseFilter}&`;
+            if (typeFilter !== 'all') url += `type=${typeFilter}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    events = data;
+                    highlightEvents();
+                });
+        }
+        
+        function openAddEventModal() {
+            document.getElementById('addEventModal').classList.remove('hidden');
+            document.getElementById('addEventModal').classList.add('flex');
+        }
+        
+        function closeAddEventModal() {
+            document.getElementById('addEventModal').classList.add('hidden');
+            document.getElementById('addEventModal').classList.remove('flex');
+            document.getElementById('eventForm').reset();
+            
+            // Reset date to today
+            const today = new Date();
+            document.querySelector('input[name="date"]').value = today.toISOString().split('T')[0];
+        }
+        
+        function saveEvent() {
+            const form = document.getElementById('eventForm');
+            const formData = new FormData(form);
+            
+            // Validate
+            if (!formData.get('title') || !formData.get('type') || !formData.get('date')) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Show loading
+            const saveBtn = document.querySelector('#addEventModal button[onclick="saveEvent()"]');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+            saveBtn.disabled = true;
+            
+            // Submit form
+            fetch('/add_calendar_event', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Event added successfully!', 'success');
+                    closeAddEventModal();
+                    
+                    // Refresh calendar
+                    loadEvents();
+                    
+                    // Reload page to show new event in upcoming list
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast(data.message || 'Error saving event', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Network error: ' + error.message, 'error');
+            })
+            .finally(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
+        }
+        
+        function viewEventDetails(eventId) {
+            // Show event details (simplified for now)
+            showToast('Viewing event details', 'info');
+            // In a real implementation, you would fetch and display event details
+        }
+        
+        function editEvent(eventId) {
+            // Show edit event (simplified for now)
+            showToast('Editing event', 'info');
+            // In a real implementation, you would load event data into the form
+        }
+        
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch(`/delete_calendar_event/${eventId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Event deleted successfully!', 'success');
+                        // Reload page to update events
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        showToast(data.message || 'Error deleting event', 'error');
+                    }
+                });
+            }
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-xl text-white z-50 transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAddEventModal();
+            }
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                openAddEventModal();
+            }
+        });
+    </script>
+    
+    <style>
+        .calendar-day:hover {
+            background-color: #f9fafb;
+            cursor: pointer;
+        }
+        
+        .calendar-day.today {
+            background-color: #eff6ff;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .ripple:focus:after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Grade Submission - {{ submission.assignment_title }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Grade Submission</h1>
+        <p class="text-gray-600 dark:text-gray-300">{{ submission.assignment_title }} - {{ submission.course_name }}</p>
+    </div>
+    
+    <div class="max-w-4xl mx-auto">
+        <!-- Submission Details -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow mb-6">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Submission Details</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Student Information</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Name:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.student_name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Admission No:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.admission_no }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Roll No:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.roll_no }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Assignment Information</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Course:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.course_name }} ({{ submission.course_code }})</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Max Marks:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.max_marks }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Submission Date:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ submission.submission_date|datetimeformat }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submission Content -->
+                {% if submission.submission_text %}
+                <div class="mt-6">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Submission Text</h3>
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <p class="text-gray-800 dark:text-gray-300 whitespace-pre-wrap">{{ submission.submission_text }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- File Attachment -->
+                {% if submission.file_path %}
+                <div class="mt-6">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Attached File</h3>
+                    <div class="flex items-center p-3 border rounded-lg">
+                        <i class="fas fa-file text-gray-400 dark:text-gray-500 mr-3"></i>
+                        <span class="text-gray-800 dark:text-white flex-1">{{ submission.file_path }}</span>
+                        <a href="{{ url_for('download_file', filename=submission.file_path) }}"
+                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Grading Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Grade Submission</h2>
+            </div>
+            <div class="p-6">
+                <form method="POST">
+                    <div class="space-y-6">
+                        <!-- Current Grade (if already graded) -->
+                        {% if submission.marks_obtained is not none %}
+                        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                            <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-2">Current Grade</h3>
+                            <div class="flex items-center">
+                                <span class="text-lg font-bold text-yellow-700 dark:text-yellow-400">
+                                    {{ submission.marks_obtained }}/{{ submission.max_marks }}
+                                </span>
+                                <span class="ml-2 text-yellow-600 dark:text-yellow-500">
+                                    ({{ ((submission.marks_obtained / submission.max_marks) * 100)|round(1) }}%)
+                                </span>
+                            </div>
+                            {% if submission.feedback %}
+                            <div class="mt-2">
+                                <p class="text-sm text-yellow-700 dark:text-yellow-400">
+                                    <span class="font-medium">Previous Feedback:</span> {{ submission.feedback }}
+                                </p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Marks Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Marks Obtained <span class="text-red-500">*</span>
+                                <span class="text-gray-500 dark:text-gray-400 text-sm">(0 - {{ submission.max_marks }})</span>
+                            </label>
+                            <input type="number" name="marks_obtained" 
+                                   value="{{ submission.marks_obtained or '' }}"
+                                   min="0" max="{{ submission.max_marks }}" step="0.5" required
+                                   class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                   placeholder="Enter marks">
+                        </div>
+                        
+                        <!-- Feedback -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Feedback
+                            </label>
+                            <textarea name="feedback" rows="4"
+                                      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                      placeholder="Provide feedback to the student">{{ submission.feedback or '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 mt-8">
+                        <a href="{{ url_for('assignment_details', assignment_id=submission.assignment_id) }}"
+                           class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
+                            Save Grade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

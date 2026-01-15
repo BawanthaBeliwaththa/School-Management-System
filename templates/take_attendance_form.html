@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Attendance{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Take Attendance</h1>
+        <p class="text-gray-600 dark:text-gray-300">Select class and date to take attendance</p>
+    </div>
+    
+    <div class="max-w-md mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <form method="POST" action="{{ url_for('take_attendance') }}">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Select Class <span class="text-red-500">*</span>
+                        </label>
+                        <select name="class_id" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            <option value="">Select a class</option>
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }} - Section {{ class.section }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Attendance Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="attendance_date" required
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                               value="{{ date.today().isoformat() }}">
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-8">
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                        Next: Mark Attendance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

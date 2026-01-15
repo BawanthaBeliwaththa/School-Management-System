@@ -1,0 +1,362 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-book mr-3"></i>Subjects Management
+                    </h1>
+                    <p class="text-gray-600">Manage curriculum subjects and course materials</p>
+                </div>
+                <button id="addSubject" 
+                        class="ripple bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-indigo-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Add Subject
+                </button>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Subjects</p>
+                            <p class="text-2xl font-bold">{{ subjects|length }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-book text-indigo-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Theory Subjects</p>
+                            <p class="text-2xl font-bold">
+                                {{ subjects|selectattr('type', 'equalto', 'Theory')|list|length }}
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chalkboard text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Practical Subjects</p>
+                            <p class="text-2xl font-bold">
+                                {{ subjects|selectattr('type', 'equalto', 'Practical')|list|length }}
+                            </p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-flask text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Teachers Assigned</p>
+                            <p class="text-2xl font-bold">24</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-tie text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Subjects Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for subject in subjects %}
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift animate-on-scroll" style="animation-delay: {{ loop.index0 * 100 }}ms">
+                <!-- Subject Header -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <div class="w-12 h-12 rounded-lg {{ 'bg-blue-100' if subject.type == 'Theory' else 'bg-green-100' }} flex items-center justify-center mr-3">
+                                    <i class="{{ 'fas fa-chalkboard' if subject.type == 'Theory' else 'fas fa-flask' }} {{ 'text-blue-600' if subject.type == 'Theory' else 'text-green-600' }} text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">{{ subject.subject }}</h3>
+                                    <p class="text-sm text-gray-600">Code: {{ subject.code }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Subject Type Badge -->
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ 'bg-blue-100 text-blue-800' if subject.type == 'Theory' else 'bg-green-100 text-green-800' }}">
+                                <i class="{{ 'fas fa-chalkboard-teacher' if subject.type == 'Theory' else 'fas fa-vial' }} mr-2"></i>
+                                {{ subject.type }}
+                            </span>
+                        </div>
+                        
+                        <!-- Subject ID -->
+                        <div class="text-right">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                                {{ subject.subject_id }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subject Description -->
+                    <p class="text-gray-600 text-sm">
+                        {{ subject.subject }} is a {{ subject.type|lower }} subject focusing on fundamental concepts and practical applications.
+                    </p>
+                </div>
+                
+                <!-- Subject Stats -->
+                <div class="p-6 bg-gray-50">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-indigo-600">
+                                {{ range(5, 20)|random }}
+                            </div>
+                            <div class="text-xs text-gray-500">Classes</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-green-600">
+                                {{ range(2, 8)|random }}
+                            </div>
+                            <div class="text-xs text-gray-500">Teachers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-purple-600">
+                                {{ range(50, 200)|random }}
+                            </div>
+                            <div class="text-xs text-gray-500">Students</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2">
+                        <a href="{{url_for('edit_subject', subject_id=subject.subject_id)}}" 
+                           class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 group">
+                            <i class="fas fa-edit mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                            Edit
+                        </a>
+                        <a href="{{url_for('delete_subject', subject_id=subject.subject_id)}}" 
+                           class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 group">
+                            <i class="fas fa-trash-alt mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Add Subject Modal -->
+    <div id="subjectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="subjectModalTitle">
+                        <i class="fas fa-plus mr-2"></i>Add New Subject
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeSubjectModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="subjectForm" action="{{ url_for('save_subject')}}" class="p-6">
+                <div class="space-y-4">
+                    <!-- Subject Name -->
+                    <div class="group">
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-book mr-2"></i>Subject Name*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                               id="subject" name="subject" placeholder="Enter subject name" required>
+                    </div>
+                    
+                    <!-- Subject Type -->
+                    <div class="group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-tag mr-2"></i>Subject Type*
+                        </label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <input type="radio" id="theory" name="s_type" value="Theory" 
+                                       class="hidden peer" required>
+                                <label for="theory" 
+                                       class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:bg-blue-50 transition-all duration-300 group">
+                                    <i class="fas fa-chalkboard text-blue-600 text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-medium">Theory</span>
+                                </label>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="radio" id="practical" name="s_type" value="Practical" 
+                                       class="hidden peer" required>
+                                <label for="practical" 
+                                       class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer peer-checked:border-green-500 peer-checked:bg-green-50 hover:bg-green-50 transition-all duration-300 group">
+                                    <i class="fas fa-flask text-green-600 text-2xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                    <span class="font-medium">Practical</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subject Code -->
+                    <div class="group">
+                        <label for="code" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-hashtag mr-2"></i>Subject Code*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                               id="code" name="code" placeholder="Enter subject code" required>
+                    </div>
+                    
+                    <!-- Subject Description -->
+                    <div class="group">
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-align-left mr-2"></i>Description
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                                  rows="3" id="description" name="description" placeholder="Brief description of the subject..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Hidden Fields -->
+                <input type="hidden" name="subjectid" id="subjectid" />
+                <input type="hidden" name="action" id="action" value="" />
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeSubjectModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" id="save" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                        Save Subject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Subject Modal
+            document.getElementById('addSubject').addEventListener('click', function() {
+                openSubjectModal('add');
+            });
+            
+            // Subject card hover effects
+            const subjectCards = document.querySelectorAll('.bg-white.rounded-2xl');
+            subjectCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) rotateX(2deg)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) rotateX(0)';
+                });
+            });
+            
+            // Type selection animations
+            const typeRadios = document.querySelectorAll('input[name="s_type"]');
+            typeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('label[for^="theory"], label[for^="practical"]');
+                    labels.forEach(label => {
+                        label.style.transform = 'scale(1)';
+                    });
+                    
+                    const selectedLabel = document.querySelector(`label[for="${this.id}"]`);
+                    if (selectedLabel) {
+                        selectedLabel.style.transform = 'scale(1.05)';
+                    }
+                });
+            });
+        });
+        
+        function openSubjectModal(action, subjectData = null) {
+            const modal = document.getElementById('subjectModal');
+            const title = document.getElementById('subjectModalTitle');
+            const form = document.getElementById('subjectForm');
+            
+            if (action === 'add') {
+                title.innerHTML = '<i class="fas fa-plus mr-2"></i>Add New Subject';
+                form.reset();
+                document.getElementById('action').value = 'addSubject';
+                document.getElementById('save').textContent = 'Save Subject';
+            } else if (action === 'edit') {
+                title.innerHTML = '<i class="fas fa-edit mr-2"></i>Edit Subject';
+                // Populate form with subjectData
+                document.getElementById('action').value = 'updateSubject';
+                document.getElementById('save').textContent = 'Update Subject';
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSubjectModal() {
+            const modal = document.getElementById('subjectModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('subjectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSubjectModal();
+            }
+        });
+        
+        // Add animation to subject type selection
+        const typeLabels = document.querySelectorAll('label[for^="theory"], label[for^="practical"]');
+        typeLabels.forEach(label => {
+            label.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            label.addEventListener('mouseleave', function() {
+                if (!this.querySelector('input:checked')) {
+                    this.style.transform = 'scale(1)';
+                }
+            });
+        });
+        
+        // Auto-generate subject code based on name
+        const subjectInput = document.getElementById('subject');
+        const codeInput = document.getElementById('code');
+        
+        if (subjectInput && codeInput) {
+            subjectInput.addEventListener('input', function() {
+                if (!codeInput.value) {
+                    const code = this.value.substring(0, 3).toUpperCase() + Math.floor(Math.random() * 1000);
+                    codeInput.value = code;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

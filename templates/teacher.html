@@ -1,0 +1,342 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-chalkboard-teacher mr-3"></i>Teachers Management
+                    </h1>
+                    <p class="text-gray-600">Manage faculty members and their assignments</p>
+                </div>
+                <button id="addTeacher" 
+                        class="ripple bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Add Teacher
+                </button>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-user-tie text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Teachers</p>
+                            <p class="text-2xl font-bold">{{ teachers|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-graduation-cap text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Subjects Covered</p>
+                            <p class="text-2xl font-bold">{{ subjects|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-award text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Avg Experience</p>
+                            <p class="text-2xl font-bold">8.5y</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Teachers Table -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden animate__animated animate__fadeInUp">
+            <!-- Table Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-gray-800">Faculty Members</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Search teachers..." 
+                                   class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-sort-amount-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Teachers Grid -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for teacher in teachers %}
+                    <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-6 hover-lift hover:shadow-xl transition-all duration-300 animate-on-scroll" style="animation-delay: {{ loop.index0 * 100 }}ms">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="relative">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl font-bold">
+                                        {{ teacher.teacher[0] if teacher.teacher else 'T' }}
+                                    </div>
+                                    <!-- Online Status -->
+                                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-bold text-gray-900">{{ teacher.teacher }}</h3>
+                                    <p class="text-sm text-gray-600">Teacher ID: {{ teacher.teacher_id }}</p>
+                                </div>
+                            </div>
+                            <!-- Rating -->
+                            <div class="flex items-center bg-yellow-50 px-3 py-1 rounded-full">
+                                <i class="fas fa-star text-yellow-500 text-sm"></i>
+                                <span class="ml-1 text-sm font-bold">4.8</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Specialization -->
+                        <div class="mb-4">
+                            <div class="flex items-center text-gray-600 mb-2">
+                                <i class="fas fa-book mr-2 text-purple-500"></i>
+                                <span class="text-sm font-medium">Specialization:</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
+                                    {{ teacher.subject or 'General' }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Stats -->
+                        <div class="grid grid-cols-3 gap-2 mb-6">
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-blue-600">5</div>
+                                <div class="text-xs text-gray-500">Classes</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-green-600">125</div>
+                                <div class="text-xs text-gray-500">Students</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-xl font-bold text-purple-600">98%</div>
+                                <div class="text-xs text-gray-500">Attendance</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex items-center space-x-2">
+                            <a href="{{url_for('edit_teacher', teacher_id=teacher.teacher_id)}}" 
+                               class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 group">
+                                <i class="fas fa-edit mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                                Edit
+                            </a>
+                            <a href="{{url_for('delete_teacher', teacher_id=teacher.teacher_id)}}" 
+                               class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 group">
+                                <i class="fas fa-trash-alt mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Table Footer -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Showing <span class="font-bold">{{ teachers|length }}</span> teachers
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center justify-center hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                            1
+                        </button>
+                        <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                            2
+                        </button>
+                        <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Teacher Modal -->
+    <div id="teacherModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="teacherModalTitle">
+                        <i class="fas fa-user-plus mr-2"></i>Add New Teacher
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeTeacherModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="teacherForm" action="{{ url_for('save_teacher')}}" class="p-6">
+                <div class="space-y-4">
+                    <!-- Teacher Name -->
+                    <div class="group">
+                        <label for="techer_name" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-user-tie mr-2"></i>Teacher Name*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" 
+                               id="techer_name" name="techer_name" placeholder="Enter teacher name" required>
+                    </div>
+                    
+                    <!-- Specialization -->
+                    <div class="group">
+                        <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-book mr-2"></i>Specialization*
+                        </label>
+                        <select name="specialization" id="specialization" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" required>
+                            <option value="">--Select Subject--</option>
+                            {% for subject in subjects %}
+                                <option value="{{subject.subject_id}}">{{subject.subject}}</option>		
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Additional Fields -->
+                    <div class="group">
+                        <label for="experience" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-chart-line mr-2"></i>Experience (Years)
+                        </label>
+                        <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" 
+                               id="experience" name="experience" placeholder="Years of experience">
+                    </div>
+                    
+                    <div class="group">
+                        <label for="qualification" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                            <i class="fas fa-graduation-cap mr-2"></i>Qualification
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 group-hover:border-purple-400" 
+                               id="qualification" name="qualification" placeholder="Highest qualification">
+                    </div>
+                </div>
+                
+                <!-- Hidden Fields -->
+                <input type="hidden" name="teacherid" id="teacherid" />
+                <input type="hidden" name="action" id="action" value="" />
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeTeacherModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" id="save" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                        Save Teacher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Teacher Modal
+            document.getElementById('addTeacher').addEventListener('click', function() {
+                openTeacherModal('add');
+            });
+            
+            // Teacher card hover effects
+            const teacherCards = document.querySelectorAll('.bg-gradient-to-br');
+            teacherCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) rotateX(2deg)';
+                    this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) rotateX(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('input[placeholder="Search teachers..."]');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                teacherCards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        });
+        
+        function openTeacherModal(action, teacherData = null) {
+            const modal = document.getElementById('teacherModal');
+            const title = document.getElementById('teacherModalTitle');
+            const form = document.getElementById('teacherForm');
+            
+            if (action === 'add') {
+                title.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Add New Teacher';
+                form.reset();
+                document.getElementById('action').value = 'addTeacher';
+                document.getElementById('save').textContent = 'Save Teacher';
+            } else if (action === 'edit') {
+                title.innerHTML = '<i class="fas fa-edit mr-2"></i>Edit Teacher';
+                // Populate form with teacherData
+                document.getElementById('action').value = 'updateTeacher';
+                document.getElementById('save').textContent = 'Update Teacher';
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeTeacherModal() {
+            const modal = document.getElementById('teacherModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('teacherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTeacherModal();
+            }
+        });
+        
+        // Add floating animation to teacher cards
+        const cards = document.querySelectorAll('.animate-on-scroll');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 100}ms`;
+        });
+    </script>
+</body>
+</html>

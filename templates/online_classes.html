@@ -1,0 +1,572 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Animated Background -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
+        
+        <!-- Header Section -->
+        <div class="relative z-10 mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-video mr-3"></i>Online Classes
+                    </h1>
+                    <p class="text-gray-600">Join virtual classrooms and attend live sessions</p>
+                </div>
+                
+                {% if session.role == 'teacher' %}
+                <button id="addClass" 
+                        class="ripple bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-indigo-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Schedule Class
+                </button>
+                {% endif %}
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-video text-indigo-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Classes</p>
+                            <p class="text-2xl font-bold">{{ classes|length }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Attended</p>
+                            <p class="text-2xl font-bold">
+                                {{ classes|selectattr('attended', 'equalto', true)|list|length if session.role == 'student' else classes|sum(attribute='attendance_count') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Upcoming</p>
+                            <p class="text-2xl font-bold">
+                                {{ classes|selectattr('status', 'equalto', 'upcoming')|list|length if session.role == 'student' else classes|selectattr('schedule_time', 'future')|list|length }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Active Now</p>
+                            <p class="text-2xl font-bold">
+                                {{ classes|selectattr('status', 'equalto', 'live')|list|length if session.role == 'student' else '4' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Classes Banner -->
+        {% set live_classes = classes|selectattr('status', 'equalto', 'live')|list %}
+        {% if live_classes %}
+        <div class="relative z-10 mb-6 animate__animated animate__fadeInUp">
+            <div class="bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl p-6 text-white shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mr-4 animate-pulse">
+                            <i class="fas fa-broadcast-tower text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-1">Live Classes Running Now!</h3>
+                            <p class="text-red-100">Join these live sessions immediately</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold mb-1">{{ live_classes|length }}</div>
+                        <p class="text-red-100 text-sm">Active Sessions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Classes Grid -->
+        <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for class in classes %}
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift animate-on-scroll" 
+                 style="animation-delay: {{ loop.index0 * 100 }}ms;
+                        {% if class.status == 'live' %}border: 2px solid #ef4444;{% endif %}">
+                
+                <!-- Class Status Badge -->
+                <div class="absolute top-4 right-4 z-10">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium 
+                        {% if class.status == 'live' %}bg-red-100 text-red-800 animate-pulse
+                        {% elif class.status == 'upcoming' %}bg-blue-100 text-blue-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        <i class="fas {% if class.status == 'live' %}fa-broadcast-tower
+                            {% elif class.status == 'upcoming' %}fa-clock
+                            {% else %}fa-check-circle{% endif %} mr-1"></i>
+                        {{ class.status|title }}
+                    </span>
+                </div>
+                
+                <!-- Class Header -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-start mb-4">
+                        <div class="w-16 h-16 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-video text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">{{ class.title }}</h3>
+                            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                <span>
+                                    <i class="fas fa-book mr-1"></i>{{ class.course_name }}
+                                </span>
+                                {% if session.role == 'student' %}
+                                <span class="{% if class.attended %}text-green-600{% else %}text-gray-500{% endif %}">
+                                    <i class="fas {% if class.attended %}fa-check-circle{% else %}fa-times-circle{% endif %} mr-1"></i>
+                                    {% if class.attended %}Attended{% else %}Not Attended{% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Class Description -->
+                    <p class="text-gray-600 text-sm line-clamp-2 mb-4">{{ class.description }}</p>
+                    
+                    <!-- Schedule Time -->
+                    <div class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg">
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">
+                                <i class="fas fa-calendar-alt mr-2 text-indigo-600"></i>
+                                {{ class.schedule_time|datetimeformat }}
+                            </div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                <i class="fas fa-clock mr-2 text-indigo-600"></i>
+                                {{ class.duration }} minutes
+                            </div>
+                        </div>
+                        
+                        {% if class.status == 'live' %}
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse mr-2"></div>
+                            <span class="text-sm font-medium text-red-600">LIVE</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Class Actions -->
+                <div class="p-6">
+                    {% if class.status == 'live' %}
+                    <a href="{{ class.meeting_link }}" target="_blank" 
+                       class="ripple block w-full text-center px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mb-3 group">
+                        <i class="fas fa-sign-in-alt mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                        Join Live Class
+                    </a>
+                    {% elif class.status == 'upcoming' %}
+                    <button onclick="setReminder('{{ class.class_id }}')" 
+                            class="ripple block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl mb-3 group">
+                        <i class="fas fa-bell mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                        Set Reminder
+                    </button>
+                    {% else %}
+                    <div class="text-center px-6 py-3 bg-gray-100 text-gray-600 rounded-lg mb-3">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        {% if class.attended %}Attended{% else %}Completed{% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Meeting Link -->
+                    <div class="flex items-center justify-between">
+                        <button onclick="copyToClipboard('{{ class.meeting_link }}')" 
+                                class="ripple flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors duration-300 group">
+                            <i class="fas fa-link mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                            Copy Link
+                        </button>
+                        
+                        <!-- Additional Actions -->
+                        <div class="flex items-center space-x-2">
+                            {% if session.role == 'teacher' %}
+                            <button class="ripple w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors duration-300 group">
+                                <i class="fas fa-edit text-sm group-hover:rotate-12 transition-transform duration-300"></i>
+                            </button>
+                            <button class="ripple w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors duration-300 group">
+                                <i class="fas fa-trash-alt text-sm group-hover:scale-110 transition-transform duration-300"></i>
+                            </button>
+                            {% endif %}
+                            
+                            <button onclick="showClassDetails('{{ class.class_id }}')" 
+                                    class="ripple w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-200 transition-colors duration-300 group">
+                                <i class="fas fa-info text-sm group-hover:scale-110 transition-transform duration-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Empty State -->
+            {% if not classes %}
+            <div class="col-span-3">
+                <div class="bg-white rounded-2xl shadow-xl p-12 text-center">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
+                        <i class="fas fa-video text-gray-400 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-700 mb-2">No Online Classes</h3>
+                    <p class="text-gray-600 mb-6">
+                        {% if session.role == 'teacher' %}
+                        Schedule your first online class to get started
+                        {% else %}
+                        No classes scheduled at the moment
+                        {% endif %}
+                    </p>
+                    {% if session.role == 'teacher' %}
+                    <button id="addClassEmpty" 
+                            class="ripple bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:from-indigo-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus mr-2"></i>Schedule First Class
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Upcoming Classes Timeline -->
+        {% set upcoming_classes = classes|selectattr('status', 'equalto', 'upcoming')|list %}
+        {% if upcoming_classes %}
+        <div class="relative z-10 mt-8 bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInUp">
+            <h3 class="text-xl font-bold mb-6 gradient-text">Upcoming Classes Timeline</h3>
+            
+            <div class="relative">
+                <!-- Timeline -->
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-blue-500"></div>
+                
+                {% for class in upcoming_classes|sort(attribute='schedule_time') %}
+                <div class="relative ml-8 mb-6 last:mb-0">
+                    <!-- Timeline Dot -->
+                    <div class="absolute -left-10 top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 border-4 border-white shadow-lg"></div>
+                    
+                    <!-- Class Card -->
+                    <div class="bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 border border-gray-200 hover-lift transition-all duration-300">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h4 class="font-bold text-gray-900">{{ class.title }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    <i class="fas fa-book mr-1"></i>{{ class.course_name }}
+                                </p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ class.schedule_time|timeuntil }}
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                {{ class.schedule_time|datetimeformat('short') }}
+                            </div>
+                            <a href="{{ class.meeting_link }}" target="_blank" 
+                               class="ripple px-4 py-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-lg hover:from-indigo-600 hover:to-blue-700 transition-all duration-300 text-sm">
+                                <i class="fas fa-external-link-alt mr-1"></i>Join
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Add Class Modal -->
+    <div id="classModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="classModalTitle">
+                        <i class="fas fa-plus mr-2"></i>Schedule New Class
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeClassModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="classForm" action="{{ url_for('online_classes') }}" class="p-6">
+                <div class="space-y-4">
+                    <!-- Title -->
+                    <div class="group">
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-heading mr-2"></i>Class Title*
+                        </label>
+                        <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                               id="title" name="title" placeholder="Enter class title" required>
+                    </div>
+                    
+                    <!-- Course -->
+                    <div class="group">
+                        <label for="course_id" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-book mr-2"></i>Course*
+                        </label>
+                        <select name="course_id" id="course_id" 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" required>
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.course_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="group">
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-align-left mr-2"></i>Description
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                                  rows="3" id="description" name="description" placeholder="Class description and agenda..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Schedule Time -->
+                        <div class="group">
+                            <label for="schedule_time" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                                <i class="fas fa-calendar-day mr-2"></i>Schedule Time*
+                            </label>
+                            <input type="datetime-local" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                                   id="schedule_time" name="schedule_time" required>
+                        </div>
+                        
+                        <!-- Duration -->
+                        <div class="group">
+                            <label for="duration" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                                <i class="fas fa-clock mr-2"></i>Duration (minutes)*
+                            </label>
+                            <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                                   id="duration" name="duration" value="60" min="15" max="240" step="15" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Meeting Link -->
+                    <div class="group">
+                        <label for="meeting_link" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-link mr-2"></i>Meeting Link*
+                        </label>
+                        <input type="url" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                               id="meeting_link" name="meeting_link" placeholder="https://meet.google.com/abc-defg-hij" required>
+                    </div>
+                    
+                    <!-- Additional Instructions -->
+                    <div class="group">
+                        <label for="instructions" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-indigo-600 transition-colors duration-300">
+                            <i class="fas fa-list-check mr-2"></i>Additional Instructions
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 group-hover:border-indigo-400" 
+                                  rows="3" id="instructions" name="instructions" placeholder="Any special instructions for students..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeClassModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-calendar-plus mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                        Schedule Class
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Class Modal
+            document.getElementById('addClass')?.addEventListener('click', openClassModal);
+            document.getElementById('addClassEmpty')?.addEventListener('click', openClassModal);
+            
+            // Set minimum datetime to now
+            const scheduleInput = document.getElementById('schedule_time');
+            if (scheduleInput) {
+                const now = new Date();
+                const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .slice(0, 16);
+                scheduleInput.min = localDateTime;
+                scheduleInput.value = localDateTime;
+            }
+            
+            // Class card animations
+            const classCards = document.querySelectorAll('.hover-lift');
+            classCards.forEach((card, index) => {
+                // Add stagger animation
+                card.style.animationDelay = `${index * 100}ms`;
+                
+                // Hover effect for live classes
+                if (card.style.border.includes('#ef4444')) {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px) scale(1.02)';
+                        this.style.boxShadow = '0 25px 50px -12px rgba(239, 68, 68, 0.25)';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0) scale(1)';
+                        this.style.boxShadow = '';
+                    });
+                }
+            });
+            
+            // Auto-generate meeting link
+            const courseSelect = document.getElementById('course_id');
+            const meetingLinkInput = document.getElementById('meeting_link');
+            
+            if (courseSelect && meetingLinkInput) {
+                courseSelect.addEventListener('change', function() {
+                    if (!meetingLinkInput.value) {
+                        const courseName = this.options[this.selectedIndex].text;
+                        const randomId = Math.random().toString(36).substr(2, 9);
+                        meetingLinkInput.value = `https://meet.google.com/${randomId}`;
+                    }
+                });
+            }
+        });
+        
+        function openClassModal() {
+            const modal = document.getElementById('classModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeClassModal() {
+            const modal = document.getElementById('classModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('classModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeClassModal();
+            }
+        });
+        
+        // Copy meeting link to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Meeting link copied to clipboard!', 'success');
+            }).catch(err => {
+                showToast('Failed to copy link', 'error');
+            });
+        }
+        
+        // Set class reminder
+        function setReminder(classId) {
+            showToast('Reminder set for this class!', 'success');
+            // In a real app, this would integrate with calendar API
+        }
+        
+        // Show class details
+        function showClassDetails(classId) {
+            // This would show a modal with class details
+            showToast('Showing class details...', 'info');
+        }
+        
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-xl text-white z-50 transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Update countdown timers for upcoming classes
+        function updateCountdowns() {
+            document.querySelectorAll('[data-schedule-time]').forEach(element => {
+                const scheduleTime = new Date(element.getAttribute('data-schedule-time'));
+                const now = new Date();
+                const diffMs = scheduleTime - now;
+                
+                if (diffMs > 0) {
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    let timeString = '';
+                    if (diffDays > 0) timeString += `${diffDays}d `;
+                    if (diffHours > 0) timeString += `${diffHours}h `;
+                    timeString += `${diffMinutes}m`;
+                    
+                    element.textContent = timeString;
+                } else {
+                    element.textContent = 'Starting soon';
+                    element.classList.remove('bg-blue-100', 'text-blue-800');
+                    element.classList.add('bg-red-100', 'text-red-800');
+                }
+            });
+        }
+        
+        // Update countdowns every minute
+        updateCountdowns();
+        setInterval(updateCountdowns, 60000);
+    </script>
+</body>
+</html>

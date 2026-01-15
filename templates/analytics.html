@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Analytics Dashboard</h1>
+        <p class="text-gray-600 dark:text-gray-300">System-wide analytics and performance metrics</p>
+    </div>
+    
+    <!-- Overview Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-blue-100 dark:bg-blue-900 mr-4">
+                    <i class="fas fa-user-graduate text-blue-600 dark:text-blue-300"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Total Students</p>
+                    <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ total_students }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-green-100 dark:bg-green-900 mr-4">
+                    <i class="fas fa-chalkboard-teacher text-green-600 dark:text-green-300"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Total Teachers</p>
+                    <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ total_teachers }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-purple-100 dark:bg-purple-900 mr-4">
+                    <i class="fas fa-book-open text-purple-600 dark:text-purple-300"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Total Courses</p>
+                    <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ total_courses }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900 mr-4">
+                    <i class="fas fa-calendar-check text-yellow-600 dark:text-yellow-300"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Attendance Rate</p>
+                    <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ attendance_rate }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Course Enrollments -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Top Courses by Enrollment</h3>
+            <div class="space-y-4">
+                {% for course in course_enrollments %}
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ course.course_name }}</span>
+                        <span class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ course.enrolled }} students</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" 
+                             style="width: {% if total_students %}{{ (course.enrolled / total_students * 100) }}%{% else %}0%{% endif %}"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Recent Activities -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Recent Activities</h3>
+            <div class="space-y-4">
+                {% for activity in recent_activities %}
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 p-2 rounded-lg 
+                        {% if activity.type == 'user' %}bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300
+                        {% elif activity.type == 'assignment' %}bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300
+                        {% else %}bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300{% endif %} 
+                        mr-3">
+                        <i class="fas 
+                            {% if activity.type == 'user' %}fa-user-plus
+                            {% elif activity.type == 'assignment' %}fa-file-alt
+                            {% else %}fa-upload{% endif %} 
+                            text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-800 dark:text-white">{{ activity.title }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ activity.time|timeago }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

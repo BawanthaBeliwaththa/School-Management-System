@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login</title>
+</head>
+<body>
+    <h1>Admin Login</h1>
+    
+    {% if mesage %}
+        <p style="color: {% if 'success' in mesage %}green{% else %}red{% endif %}">{{ mesage }}</p>
+    {% endif %}
+    
+    <form method="POST">
+        <div>
+            <label>Email:</label>
+            <input type="email" name="email" required>
+        </div>
+        
+        <div>
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
+        
+        <button type="submit">Login</button>
+    </form>
+    
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+    
+    <p><strong>Test Credentials:</strong></p>
+    <p>Email: admin@school.com</p>
+    <p>Password: admin123</p>
+</body>
+</html>

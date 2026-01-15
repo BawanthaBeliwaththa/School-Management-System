@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Details - {{ teacher.teacher }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Teacher Details</h1>
+            <p class="text-gray-600 dark:text-gray-300">{{ teacher.teacher }}</p>
+        </div>
+        <div class="flex space-x-4">
+            {% if session.type == 'admin' %}
+            <a href="{{ url_for('edit_teacher') }}?teacher_id={{ teacher.teacher_id }}"
+               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                <i class="fas fa-edit mr-2"></i> Edit
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Teacher Profile -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <div class="text-center mb-6">
+                    <div class="inline-block h-24 w-24 rounded-full bg-gradient-to-r from-purple-400 to-pink-600 flex items-center justify-center text-white text-3xl font-bold mb-4">
+                        {{ teacher.teacher[0] }}
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white">{{ teacher.teacher }}</h2>
+                    <p class="text-gray-600 dark:text-gray-300">{{ teacher.subject or 'Not specified' }}</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Professional Information</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Subject:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.subject or 'N/A' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Qualification:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.qualification or 'N/A' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Experience:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.experience or 'N/A' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Joining Date:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.joining_date or 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Contact Information</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Email:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.email or 'N/A' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600 dark:text-gray-400">Mobile:</span>
+                                <span class="font-medium text-gray-800 dark:text-white">{{ teacher.user_mobile or 'N/A' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if teacher.bio %}
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Bio</h3>
+                        <p class="text-gray-700 dark:text-gray-300 text-sm">{{ teacher.bio }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Teacher Activities -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Assigned Classes -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Assigned Classes</h2>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ classes|length }} classes</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    {% if classes %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for class in classes %}
+                        <div class="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <h3 class="font-medium text-gray-800 dark:text-white">{{ class.name }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Section {{ class.section }}</p>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">{{ class.student_count }} students</span>
+                                <a href="{{ url_for('class_students', class_id=class.id) }}"
+                                   class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                    View Students
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400">No classes assigned</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Teaching Courses -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Teaching Courses</h2>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ courses|length }} courses</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    {% if courses %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for course in courses %}
+                        <div class="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <h3 class="font-medium text-gray-800 dark:text-white">{{ course.course_name }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ course.course_code }}</p>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">{{ course.enrolled_students }} enrolled</span>
+                                <a href="{{ url_for('course_details', course_id=course.course_id) }}"
+                                   class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                    View Course
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400">No courses assigned</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

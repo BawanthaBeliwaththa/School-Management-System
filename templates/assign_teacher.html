@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Assign Teacher - {{ class_info.name }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Assign Teacher</h1>
+        <p class="text-gray-600 dark:text-gray-300">{{ class_info.name }} - Section {{ class_info.section }}</p>
+    </div>
+    
+    <div class="max-w-md mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <form method="POST">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Select Teacher <span class="text-red-500">*</span>
+                    </label>
+                    <select name="teacher_id" required
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                        <option value="">Select a teacher</option>
+                        {% for teacher in teachers %}
+                        <option value="{{ teacher.teacher_id }}" 
+                                {% if current_teacher and teacher.teacher_id == current_teacher.teacher_id %}selected{% endif %}>
+                            {{ teacher.teacher }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                {% if current_teacher %}
+                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">Current Teacher</h3>
+                    <p class="text-blue-700 dark:text-blue-400">{{ current_teacher.teacher }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="flex justify-end space-x-4">
+                    <a href="{{ url_for('class_details', class_id=class_info.id) }}"
+                       class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                        Cancel
+                    </a>
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                        Assign Teacher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,486 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="mb-8 animate__animated animate__fadeInDown">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text mb-2">
+                        <i class="fas fa-user-graduate mr-3"></i>Student Management
+                    </h1>
+                    <p class="text-gray-600">Manage student admissions and information</p>
+                </div>
+                <button id="addStudent" 
+                        class="ripple bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                    <i class="fas fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i>
+                    Student Admission
+                </button>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Students</p>
+                            <p class="text-2xl font-bold">{{ students|length }}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">New This Month</p>
+                            <p class="text-2xl font-bold">12</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Avg Attendance</p>
+                            <p class="text-2xl font-bold">94%</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-clipboard-check text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 shadow-lg hover-lift">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Graduating</p>
+                            <p class="text-2xl font-bold">45</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-6 animate__animated animate__fadeInUp">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Class</label>
+                    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400">
+                        <option>All Classes</option>
+                        {% for class in classes %}
+                        <option>{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400">
+                        <option>All Sections</option>
+                        {% for section in sections %}
+                        <option>{{ section.section }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400">
+                        <option>All Genders</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-end">
+                    <button class="ripple w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center group">
+                        <i class="fas fa-filter mr-2 group-hover:rotate-180 transition-transform duration-300"></i>
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Students Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for student in students %}
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden hover-lift animate-on-scroll" style="animation-delay: {{ loop.index0 * 100 }}ms">
+                <!-- Student Photo -->
+                <div class="relative h-48 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden">
+                            <div class="w-full h-full bg-gradient-to-r from-pink-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold">
+                                {{ student.name[0] }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Status Badge -->
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
+                            Active
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Student Info -->
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">{{ student.name }}</h3>
+                    <p class="text-gray-600 text-sm mb-4">{{ student.admission_no }} • Roll: {{ student.roll_no }}</p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-school text-blue-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Class & Section</p>
+                                <p class="text-sm font-medium">{{ student.class }} • {{ student.section }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-phone text-green-600 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Contact</p>
+                                <p class="text-sm font-medium">{{ student.mobile if student.mobile else 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2">
+                        <a href="{{url_for('edit_student', student_id=student.id)}}" 
+                           class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 group">
+                            <i class="fas fa-edit mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                            Edit
+                        </a>
+                        <a href="{{url_for('delete_student', student_id=student.id)}}" 
+                           class="ripple flex-1 text-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 group">
+                            <i class="fas fa-trash-alt mr-2 group-hover:scale-110 transition-transform duration-300"></i>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-8 flex items-center justify-center">
+            <nav class="flex items-center space-x-2">
+                <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center justify-center hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                    1
+                </button>
+                <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                    2
+                </button>
+                <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                    3
+                </button>
+                <button class="w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors duration-300">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Add Student Modal -->
+    <div id="studentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8 transform transition-all duration-500 scale-95">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold" id="studentModalTitle">
+                        <i class="fas fa-user-plus mr-2"></i>Student Admission
+                    </h3>
+                    <button type="button" class="text-white hover:text-gray-200 transition-colors duration-300" onclick="closeStudentModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <form method="post" id="studentForm" enctype="multipart/form-data" action="{{ url_for('save_student')}}" class="p-6 max-h-[70vh] overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Column 1 -->
+                    <div class="space-y-4">
+                        <div class="group">
+                            <label for="registerNo" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-id-card mr-2"></i>Admission Number
+                            </label>
+                            <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="registerNo" name="registerNo" placeholder="Admission Number..">
+                        </div>
+                        
+                        <div class="group">
+                            <label for="rollNo" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-list-ol mr-2"></i>Roll Number
+                            </label>
+                            <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="rollNo" name="rollNo" placeholder="Roll Number..">
+                        </div>
+                        
+                        <div class="group">
+                            <label for="year" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-calendar-alt mr-2"></i>Academic Year*
+                            </label>
+                            <select name="year" id="year" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" required>
+                                <option value="">Select Year</option>
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>
+                            </select>
+                        </div>
+                        
+                        <div class="group">
+                            <label for="admission_date" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-calendar-day mr-2"></i>Admission Date
+                            </label>
+                            <input type="date" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="admission_date" name="admission_date">
+                        </div>
+                        
+                        <div class="group">
+                            <label for="classid" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-school mr-2"></i>Class*
+                            </label>
+                            <select name="classid" id="classid" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" required>
+                                <option value="">--Select--</option>
+                                {% for class in classes %}
+                                    <option value="{{class.id}}">{{class.name}}</option>		
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2 -->
+                    <div class="space-y-4">
+                        <div class="group">
+                            <label for="sectionid" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-layer-group mr-2"></i>Section*
+                            </label>
+                            <select name="sectionid" id="sectionid" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" required>
+                                <option value="">--Select--</option>
+                                {% for section in sections %}
+                                    <option value="{{section.section_id}}">{{section.section}}</option>		
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="group">
+                            <label for="sname" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-user mr-2"></i>Name*
+                            </label>
+                            <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="sname" name="sname" placeholder="Student Name" required>
+                        </div>
+                        
+                        <div class="group">
+                            <label for="photo" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-camera mr-2"></i>Photo*
+                            </label>
+                            <div class="relative">
+                                <input type="file" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                                       id="photo" name="photo" accept="image/*" required>
+                            </div>
+                        </div>
+                        
+                        <div class="group">
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-venus-mars mr-2"></i>Gender
+                            </label>
+                            <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="gender" name="gender">
+                                <option value="">--Select--</option>							
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>							
+                            </select>
+                        </div>
+                        
+                        <div class="group">
+                            <label for="dob" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-birthday-cake mr-2"></i>Date of Birth
+                            </label>
+                            <input type="date" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="dob" name="dob">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Info -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="group">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-envelope mr-2"></i>Email
+                        </label>
+                        <input type="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                               id="email" name="email" placeholder="Email">
+                    </div>
+                    
+                    <div class="group">
+                        <label for="mobile" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-phone mr-2"></i>Mobile
+                        </label>
+                        <input type="number" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                               id="mobile" name="mobile" placeholder="Mobile">
+                    </div>
+                </div>
+                
+                <div class="mt-6 space-y-4">
+                    <div class="group">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            <i class="fas fa-home mr-2"></i>Address
+                        </label>
+                        <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                  rows="2" id="address" name="address" placeholder="Address"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="group">
+                            <label for="fname" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-male mr-2"></i>Father Name
+                            </label>
+                            <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="fname" name="fname" placeholder="Father name...">
+                        </div>
+                        
+                        <div class="group">
+                            <label for="mname" class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                                <i class="fas fa-female mr-2"></i>Mother Name
+                            </label>
+                            <input type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 group-hover:border-blue-400" 
+                                   id="mname" name="mname" placeholder="Mother Name...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden Fields -->
+                <input type="hidden" name="studentid" id="studentid" />
+                <input type="hidden" name="action" id="action" value="" />
+                
+                <!-- Modal Footer -->
+                <div class="mt-6 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeStudentModal()" 
+                            class="ripple px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:scale-105">
+                        Cancel
+                    </button>
+                    <button type="submit" id="save" 
+                            class="ripple px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center group">
+                        <i class="fas fa-save mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                        Save Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open Add Student Modal
+            document.getElementById('addStudent').addEventListener('click', function() {
+                openStudentModal('add');
+            });
+            
+            // Student card hover effects
+            const studentCards = document.querySelectorAll('.bg-white.rounded-2xl');
+            studentCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Image preview for photo upload
+            const photoInput = document.getElementById('photo');
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const preview = document.getElementById('photoPreview');
+                    if (preview && e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.src = e.target.result;
+                            preview.classList.remove('hidden');
+                        }
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            }
+        });
+        
+        function openStudentModal(action, studentData = null) {
+            const modal = document.getElementById('studentModal');
+            const title = document.getElementById('studentModalTitle');
+            const form = document.getElementById('studentForm');
+            
+            if (action === 'add') {
+                title.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Student Admission';
+                form.reset();
+                document.getElementById('action').value = 'addStudent';
+                document.getElementById('save').innerHTML = '<i class="fas fa-save mr-2 group-hover:rotate-12 transition-transform duration-300"></i>Save Student';
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95');
+                modal.querySelector('.transform').classList.add('scale-100');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeStudentModal() {
+            const modal = document.getElementById('studentModal');
+            modal.querySelector('.transform').classList.remove('scale-100');
+            modal.querySelector('.transform').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Close modal on outside click
+        document.getElementById('studentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStudentModal();
+            }
+        });
+        
+        // Date picker enhancements
+        const dateInputs = document.querySelectorAll('input[type="date"]');
+        dateInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('ring-2', 'ring-blue-200', 'rounded-lg');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('ring-2', 'ring-blue-200');
+            });
+        });
+    </script>
+</body>
+</html>

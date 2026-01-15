@@ -1,0 +1,72 @@
+<!-- Sidebar Logo -->
+<div class="p-6 border-b">
+    <a href="{{ url_for('dashboard') }}" class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mr-3">
+            <i class="fas fa-graduation-cap text-white text-2xl"></i>
+        </div>
+        <div>
+            <h1 class="text-xl font-bold gradient-text">StarLight School</h1>
+            <p class="text-xs text-gray-500">{{ session.role|title }} Portal</p>
+        </div>
+    </a>
+</div>
+
+<!-- User Profile Mini -->
+<div class="p-4 border-b">
+    <div class="flex items-center">
+        <div class="relative">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                {{ session.name[0] if session.name else 'U' }}
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+        </div>
+        <div class="ml-3">
+            <p class="font-bold text-gray-800">{{ session.name or 'User' }}</p>
+            <p class="text-xs text-gray-600">{{ session.role|title }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Menu -->
+<div class="p-4 overflow-y-auto" style="height: calc(100vh - 180px);">
+    <!-- Quick Stats - Show only for admin and teacher -->
+    {% if session.role != 'student' %}
+    <div class="mb-6 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
+        <div class="text-xs font-medium text-gray-500 mb-2">TODAY'S STATS</div>
+        <div class="grid grid-cols-2 gap-2">
+            <div class="text-center">
+                <div class="text-lg font-bold text-blue-600">
+                    {% if session.role == 'teacher' %}{{ avg_attendance|default('94') }}%
+                    {% else %}94%{% endif %}
+                </div>
+                <div class="text-xs text-gray-600">Attendance</div>
+            </div>
+            <div class="text-center">
+                <div class="text-lg font-bold text-green-600">
+                    {% if session.role == 'teacher' %}{{ assignments_to_grade|default('12') }}
+                    {% else %}12{% endif %}
+                </div>
+                <div class="text-xs text-gray-600">
+                    {% if session.role == 'teacher' %}To Grade
+                    {% else %}New Tasks{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Include role-specific menus -->
+    {% if session.role == 'admin' %}
+        {% include 'left_menus_admin.html' %}
+    {% elif session.role == 'teacher' %}
+        {% include 'left_menus_teacher.html' %}
+    {% elif session.role == 'student' %}
+        {% include 'left_menus_student.html' %}
+    {% endif %}
+
+    <!-- Bottom Info -->
+    <div class="mt-6 p-3 bg-gray-50 rounded-xl">
+        <p class="text-xs text-gray-500 mb-1">Last login: {{ last_login|default('Today 09:45 AM') }}</p>
+        <p class="text-xs text-gray-500">System: Online</p>
+    </div>
+</div>

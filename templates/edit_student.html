@@ -1,0 +1,110 @@
+{% include 'header.html' %}
+<script src="{{ url_for('static',filename='js/student.js') }}"></script>
+<body>
+	{% include 'top_menus.html' %}
+	<div class="container">        
+		{% include 'left_menus.html' %}    
+		<div class="content">
+			<div class="container-fluid">   	
+				<div class="row">
+				<a href="#"><strong><span class="ti-crown"></span> Edit Student</strong></a>
+				<hr>
+				{% for student in students %}
+					<form method="post" id="studentForm" enctype="multipart/form-data" action="{{ url_for('save_student')}}">						
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="mobile" class="control-label">Admission Number</label>							
+								<input type="number" class="form-control" id="registerNo" name="registerNo" placeholder="Admission Number..">							
+							</div>	
+							<div class="form-group">
+								<label for="mobile" class="control-label">Roll Number</label>							
+								<input type="number" class="form-control" id="rollNo" name="rollNo" placeholder="Roll Number..">							
+							</div>	
+							<div class="form-group">
+								<label for="mname" class="control-label">Academic Year*</label>	
+								<select name="year" id="year" class="form-control" required>
+									<option value="">Select Year</option>
+									<option value="2018">2018</option>
+									<option value="2019">2019</option>
+									<option value="2020">2020</option>
+									<option value="2021">2021</option>
+									<option value="2022">2022</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="email" class="control-label">Admission Date</label>							
+								<input type="text" class="form-control"  id="admission_date" name="admission_date" placeholder="mm/dd/yyyy">							
+							</div>		
+							<div class="form-group">
+								<label for="mname" class="control-label">Class*</label>	
+								<select name="classid" id="classid" class="form-control" required>
+									<option value="">--Select--</option>
+									{% for class in classes %}
+										<option value="{{class.id}}">{{class.name}}</option>		
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="mname" class="control-label">Section</label>	
+								<select name="sectionid" id="sectionid" class="form-control" required>
+									<option value="">--Select--</option>
+									{% for section in sections %}
+										<option value="{{section.section_id}}">{{section.section}}</option>		
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="firstname" class="control-label">Name*</label>
+								<input type="text" class="form-control" id="sname" name="sname" placeholder="Student Name" required>				
+							</div>	
+							<div class="form-group">
+								<label for="firstname" class="control-label">Photo*</label>
+								<input type="file" class="form-control" id="photo" name="photo" placeholder="Student photo" required>				
+							</div>					
+							<div class="form-group">
+								<label for="gender" class="control-label">Gender</label>				
+								<select class="form-control" id="gender" name="gender"/>
+									<option value="">--Select--</option>							
+									<option value="male">Male</option>
+									<option value="female">Female</option>							
+								</select>							
+							</div>	
+							<div class="form-group">
+								<label for="email" class="control-label">Date of Birth</label>							
+								<input type="text" class="form-control"  id="dob" name="dob" placeholder="mm/dd/yyyy">							
+							</div>	
+							<div class="form-group">
+								<label for="email" class="control-label">Email</label>							
+								<input type="email" class="form-control"  id="email" name="email" placeholder="Email">							
+							</div>	
+							<div class="form-group">
+								<label for="mobile" class="control-label">Mobile</label>							
+								<input type="number" class="form-control" id="mobile" name="mobile" placeholder="Mobile">							
+							</div>		
+							<div class="form-group">
+								<label for="address" class="control-label">Address</label>							
+								<textarea class="form-control" rows="2" id="address" name="address" placeholder="Address"></textarea>							
+							</div>
+							<div class="form-group">
+								<label for="fname" class="control-label">Father Name</label>							
+								<input type="text" class="form-control" id="fname" name="fname" placeholder="Father name...">							
+							</div>	
+							<div class="form-group">
+								<label for="mname" class="control-label">Mother Name</label>							
+								<input type="text" class="form-control" id="mname" name="mname" placeholder="Mother Name...">						
+							</div>									
+						</div>
+						<div class="modal-footer">
+							<input type="hidden" name="studentid" id="studentid" value="{{student.id}}"/>
+							<input type="hidden" name="action" id="action" value="updateStudent" />
+							<input type="submit" name="save" id="save" class="btn btn-info" value="Save" />
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>						
+					</form>
+				{% endfor %}						
+				</div>	
+			</div>
+		</div>	
+	</div> 
+</body>
+</html>

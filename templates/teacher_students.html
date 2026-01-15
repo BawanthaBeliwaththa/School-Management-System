@@ -1,0 +1,83 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold gradient-text mb-8">My Students</h1>
+        
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Class</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Attendance</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assignments</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for student in students %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold mr-3">
+                                        {{ student.name[0] }}
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ student.name }}</p>
+                                        <p class="text-sm text-gray-600">{{ student.admission_no }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                                    {{ student.class_name }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-16 bg-gray-200 rounded-full h-2 mr-3">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 94%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium">94%</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                    8/10 Submitted
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-2">
+                                    <a href="#" class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="text-green-600 hover:text-green-800">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="text-purple-600 hover:text-purple-800">
+                                        <i class="fas fa-chart-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if not students %}
+            <div class="text-center py-12">
+                <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                    <i class="fas fa-user-graduate text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">No Students Found</h3>
+                <p class="text-gray-600">You don't have any students assigned to your classes.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+{% include 'footer.html' %}

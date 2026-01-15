@@ -1,0 +1,116 @@
+{% include 'header.html' %}
+<body class="bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen flex items-center justify-center">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+    </div>
+    
+    <!-- Login Container -->
+    <div class="relative z-10 w-full max-w-md mx-4">
+        <!-- Glass Morphism Card -->
+        <div class="glass rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-105">
+            <!-- Animated Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-center relative overflow-hidden">
+                <div class="absolute inset-0 shimmer"></div>
+                <div class="relative z-10">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
+                        <i class="fas fa-chalkboard-teacher text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Teacher Portal</h1>
+                    <p class="text-blue-100">Manage your classes and students</p>
+                </div>
+            </div>
+            
+            <!-- Login Form -->
+            <div class="p-8 bg-white/90 backdrop-blur-sm">
+                {% if mesage is defined and mesage %}
+                <div class="mb-6 animate__animated animate__shakeX">
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i>
+                        <span>{{ mesage }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <form action="{{ url_for('login_teacher') }}" method="post" class="space-y-6">
+                    <!-- Email Field -->
+                    <div class="group">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-2"></i>Email Address
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="email" id="email" name="email" 
+                                   class="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Enter your email" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="group">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2"></i>Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-key text-gray-400"></i>
+                            </div>
+                            <input type="password" id="password" name="password" 
+                                   class="pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Enter your password" required>
+                            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePassword()">
+                                <i class="fas fa-eye text-gray-400 hover:text-blue-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                        Sign In as Teacher
+                    </button>
+                    
+                    <!-- Demo Credentials -->
+                    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <p class="text-sm text-blue-800 font-medium mb-1">
+                            <i class="fas fa-info-circle mr-1"></i> Demo Teacher:
+                        </p>
+                        <p class="text-xs text-blue-600">Email: teacher@school.com</p>
+                        <p class="text-xs text-blue-600">Password: teacher123</p>
+                    </div>
+                </form>
+                
+                <!-- Other Portals -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <p class="text-center text-gray-600 mb-3">Other login options</p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="{{ url_for('login') }}" class="text-sm text-blue-600 hover:underline">Admin</a>
+                        <a href="{{ url_for('student_login') }}" class="text-sm text-blue-600 hover:underline">Student</a>
+                        <a href="{{ url_for('login_parent') }}" class="text-sm text-blue-600 hover:underline">Parent</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = event.currentTarget.querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

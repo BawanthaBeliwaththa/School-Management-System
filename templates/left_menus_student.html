@@ -1,0 +1,103 @@
+<!-- Student Navigation -->
+<div class="space-y-6">
+    <!-- Dashboard & Profile -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">STUDENT PORTAL</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('dashboard') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-tachometer-alt text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">Dashboard</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('student_profile') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-emerald-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-user-circle text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">My Profile</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Learning Resources -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">LEARNING RESOURCES</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('courses') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-graduation-cap text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">Courses</span>
+                    <span class="ml-auto px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">{{ enrolled_courses|default('0') }}</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Grades & Progress -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">GRADES & PROGRESS</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('gradebook') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-green-500/10 hover:to-teal-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Gradebook</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('progress') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-bar text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-purple-600 transition-colors duration-300">Progress Tracking</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('attendance') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-amber-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-clipboard-check text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-yellow-600 transition-colors duration-300">My Attendance</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Communication -->
+    <div>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">COMMUNICATION</h3>
+        
+        <ul class="space-y-2">
+            <li>
+                <a href="{{ url_for('announcements') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-bullhorn text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">Announcements</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ url_for('calendar') }}" class="flex items-center p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 transition-all duration-300 group">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-alt text-white"></i>
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-purple-600 transition-colors duration-300">Calendar</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

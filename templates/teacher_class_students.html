@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Class Students - {{ class_info.name }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">My Class Students</h1>
+            <p class="text-gray-600 dark:text-gray-300">{{ class_info.name }} - Section {{ class_info.section }}</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{{ url_for('take_attendance') }}"
+               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center">
+                <i class="fas fa-calendar-plus mr-2"></i> Take Attendance
+            </a>
+            <a href="{{ url_for('class_details', class_id=class_info.id) }}"
+               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                <i class="fas fa-info-circle mr-2"></i> Class Details
+            </a>
+        </div>
+    </div>
+    
+    <!-- Students Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for student in students %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <div class="flex items-start mb-4">
+                <div class="flex-shrink-0">
+                    <div class="h-12 w-12 rounded-full bg-gradient-to-r 
+                        {% if student.gender == 'male' %}from-blue-400 to-cyan-600
+                        {% else %}from-pink-400 to-rose-600{% endif %}
+                        flex items-center justify-center text-white font-bold text-lg">
+                        {{ student.name[0] }}
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                        <a href="{{ url_for('student_details', student_id=student.id) }}" class="hover:text-blue-600 dark:hover:text-blue-400">
+                            {{ student.name }}
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Roll No: {{ student.roll_no }} | Admission: {{ student.admission_no }}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Attendance</span>
+                    <span class="text-sm font-semibold
+                        {% if student.attendance_percentage >= 75 %}text-green-600
+                        {% elif student.attendance_percentage >= 50 %}text-yellow-600
+                        {% else %}text-red-600{% endif %}">
+                        {{ student.attendance_percentage }}%
+                    </span>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Contact</span>
+                    <span class="text-sm text-gray-800 dark:text-white">{{ student.mobile or 'N/A' }}</span>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">Email</span>
+                    <span class="text-sm text-gray-800 dark:text-white truncate" title="{{ student.email }}">
+                        {{ student.email or 'N/A' }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex justify-between">
+                    <a href="{{ url_for('student_details', student_id=student.id) }}"
+                       class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                        <i class="fas fa-eye mr-1"></i> View Details
+                    </a>
+                    <a href="mailto:{{ student.email }}"
+                       class="text-sm text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
+                        <i class="fas fa-envelope mr-1"></i> Email
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

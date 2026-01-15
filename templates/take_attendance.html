@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Mark Attendance</h1>
+        <p class="text-gray-600 dark:text-gray-300">Date: {{ attendance_date }}</p>
+    </div>
+    
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Student List</h2>
+            </div>
+            
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('save_attendance') }}">
+                    <input type="hidden" name="class_id" value="{{ class_id }}">
+                    <input type="hidden" name="attendance_date" value="{{ attendance_date }}">
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Roll No</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Admission No</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Student Name</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for student in students %}
+                                <tr>
+                                    <td class="px-4 py-3 text-sm text-gray-800 dark:text-white">{{ student.roll_no }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-800 dark:text-white">{{ student.admission_no }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-800 dark:text-white">{{ student.name }}</td>
+                                    <td class="px-4 py-3">
+                                        <select name="attendance_{{ student.id }}"
+                                                class="px-3 py-1 border rounded text-sm
+                                                    {% if request.form.get('attendance_' ~ student.id) == 'present' %}bg-green-100 text-green-800 border-green-300
+                                                    {% elif request.form.get('attendance_' ~ student.id) == 'absent' %}bg-red-100 text-red-800 border-red-300
+                                                    {% elif request.form.get('attendance_' ~ student.id) == 'late' %}bg-yellow-100 text-yellow-800 border-yellow-300
+                                                    {% else %}bg-gray-100 text-gray-800 border-gray-300{% endif %}">
+                                            <option value="present" {% if request.form.get('attendance_' ~ student.id) == 'present' %}selected{% endif %}>Present</option>
+                                            <option value="absent" {% if request.form.get('attendance_' ~ student.id) == 'absent' or not request.form.get('attendance_' ~ student.id) %}selected{% endif %}>Absent</option>
+                                            <option value="late" {% if request.form.get('attendance_' ~ student.id) == 'late' %}selected{% endif %}>Late</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 mt-8">
+                        <a href="{{ url_for('take_attendance') }}"
+                           class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300">
+                            Save Attendance
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

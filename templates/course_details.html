@@ -1,0 +1,388 @@
+{% include 'header.html' %}
+<body>
+    {% include 'top_menus.html' %}
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Animated Background -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
+        
+        <!-- Course Header -->
+        <div class="relative z-10 mb-8 animate__animated animate__fadeInDown">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-2xl">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center mr-4">
+                                <i class="fas fa-book text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-3xl font-bold mb-1">{{ course.course_name }}</h1>
+                                <div class="flex items-center space-x-4">
+                                    <span class="text-blue-100">
+                                        <i class="fas fa-hashtag mr-1"></i>{{ course.course_code }}
+                                    </span>
+                                    <span class="text-blue-100">
+                                        <i class="fas fa-user-tie mr-1"></i>{{ course.teacher }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-blue-100 mb-6 max-w-3xl">
+                            {{ course.description or 'A comprehensive course covering all fundamental concepts and practical applications.' }}
+                        </p>
+                        
+                        <!-- Course Stats -->
+                        <div class="flex items-center space-x-6">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">12</div>
+                                <div class="text-sm text-blue-200">Modules</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">8</div>
+                                <div class="text-sm text-blue-200">Assignments</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">4</div>
+                                <div class="text-sm text-blue-200">Quizzes</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold">65%</div>
+                                <div class="text-sm text-blue-200">Avg Grade</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enroll Button -->
+                    {% if not enrollment %}
+                    <form method="post" action="{{ url_for('enroll_course', course_id=course.course_id) }}">
+                        <button type="submit" 
+                                class="ripple bg-white text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center group">
+                            <i class="fas fa-user-plus mr-2 group-hover:rotate-12 transition-transform duration-300"></i>
+                            Enroll Now
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="px-6 py-3 bg-green-500 text-white rounded-lg font-bold flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Enrolled
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Course Content -->
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Materials & Assignments -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Course Materials -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInLeft">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold gradient-text">
+                            <i class="fas fa-file-alt mr-3"></i>Course Materials
+                        </h2>
+                        <button class="ripple text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                            <i class="fas fa-plus"></i> Add Material
+                        </button>
+                    </div>
+                    
+                    {% if materials %}
+                    <div class="space-y-4">
+                        {% for material in materials %}
+                        <div class="flex items-center p-4 bg-gray-50 rounded-xl hover:bg-blue-50 transition-all duration-300 hover-lift group">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white mr-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-900">{{ material.title }}</h4>
+                                <p class="text-sm text-gray-600">{{ material.material_type }} • {{ material.created_at|datetimeformat }}</p>
+                            </div>
+                            <a href="{{ url_for('download_material', material_id=material.material_id) }}" 
+                               class="ripple px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 group-hover:scale-105">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600">No materials uploaded yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Assignments -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInLeft">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold gradient-text">
+                            <i class="fas fa-tasks mr-3"></i>Assignments
+                        </h2>
+                        <a href="{{ url_for('assignments') }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                            View All
+                        </a>
+                    </div>
+                    
+                    {% if assignments %}
+                    <div class="space-y-4">
+                        {% for assignment in assignments %}
+                        <div class="p-4 bg-gradient-to-r from-white to-blue-50 rounded-xl border border-blue-100 hover-lift transition-all duration-300 group">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                                        {{ assignment.title }}
+                                    </h4>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        Due: {{ assignment.due_date }} • 
+                                        <span class="font-medium">{{ assignment.submissions }}/{{ assignment.total_students or 25 }} submitted</span>
+                                    </p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                    {% if assignment.due_date|days_until < 0 %}bg-red-100 text-red-800
+                                    {% elif assignment.due_date|days_until <= 2 %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ assignment.due_date|days_until }} days left
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ assignment.description }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">Max Marks: {{ assignment.max_marks }}</span>
+                                <a href="{{ url_for('assignment_details', assignment_id=assignment.assignment_id) }}" 
+                                   class="ripple px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-sm group-hover:scale-105">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-tasks text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600">No assignments yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Column: Announcements & Quick Links -->
+            <div class="space-y-6">
+                <!-- Announcements -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInRight">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold gradient-text">
+                            <i class="fas fa-bullhorn mr-3"></i>Announcements
+                        </h2>
+                        <button class="ripple text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    {% if announcements %}
+                    <div class="space-y-4">
+                        {% for announcement in announcements %}
+                        <div class="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 hover-lift transition-all duration-300">
+                            <div class="flex items-start mb-2">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">{{ announcement.title }}</h4>
+                                    <p class="text-xs text-gray-500">{{ announcement.created_at|datetimeformat }}</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm line-clamp-2">{{ announcement.content }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-bullhorn text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-600 text-sm">No announcements</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl animate__animated animate__fadeInRight">
+                    <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="{{ url_for('assignments') }}" 
+                           class="ripple flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                            <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <span>Submit Assignment</span>
+                        </a>
+                        
+                        <a href="{{ url_for('quizzes') }}" 
+                           class="ripple flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                            <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <span>Take Quiz</span>
+                        </a>
+                        
+                        <a href="{{ url_for('discussions') }}" 
+                           class="ripple flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                            <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <span>Join Discussion</span>
+                        </a>
+                        
+                        <a href="{{ url_for('resources') }}" 
+                           class="ripple flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group">
+                            <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <span>Download Resources</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Course Progress -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInRight">
+                    <h3 class="text-xl font-bold mb-4 gradient-text">Your Progress</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Overall Progress</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Assignments</span>
+                                <span>6/8 (75%)</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Quizzes</span>
+                                <span>2/4 (50%)</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full progress-fill" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                <span>Attendance</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Progress bar animations
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                    bar.style.transition = 'width 1.5s ease-out';
+                }, 300);
+            });
+            
+            // Hover effects for cards
+            const cards = document.querySelectorAll('.hover-lift');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Ripple effect for buttons
+            const rippleButtons = document.querySelectorAll('.ripple');
+            rippleButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size/2;
+                    const y = e.clientY - rect.top - size/2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.7);
+                        transform: scale(0);
+                        animation: ripple-animation 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+            
+            // Add CSS for ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple-animation {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        // Enroll button animation
+        const enrollBtn = document.querySelector('button[type="submit"]');
+        if (enrollBtn) {
+            enrollBtn.addEventListener('click', function(e) {
+                if (!this.disabled) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enrolling...';
+                    this.disabled = true;
+                    
+                    // Simulate enrollment process
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-check mr-2"></i> Enrolled Successfully!';
+                        this.classList.remove('bg-white', 'text-blue-600', 'hover:bg-blue-50');
+                        this.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600');
+                    }, 1500);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

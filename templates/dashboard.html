@@ -1,0 +1,494 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Dashboard Content -->
+<div class="container-fluid px-4 py-6">
+    <!-- Welcome Banner -->
+    <div class="mb-8 animate__animated animate__fadeInDown">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-2xl relative overflow-hidden">
+            <!-- Shimmer Effect -->
+            <div class="absolute inset-0 shimmer"></div>
+            
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <!-- Add role badge at the top right -->
+                        {% if session.role == 'student' %}
+                        <div class="absolute top-4 right-4">
+                            <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-sm">
+                                Student Portal
+                            </span>
+                        </div>
+                        {% elif session.role == 'teacher' %}
+                        <div class="absolute top-4 right-4">
+                            <span class="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm">
+                                Teacher Portal
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Update the Welcome message -->
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                            {% if session.role == 'student' %}
+                            Welcome back, {{ session.name or 'Student' }}! 👨‍🎓
+                            {% elif session.role == 'teacher' %}
+                            Welcome back, {{ session.name or 'Teacher' }}! 👨‍🏫
+                            {% else %}
+                            Welcome back, {{ session.name or 'Admin' }}! 👋
+                            {% endif %}
+                        </h1>
+                        
+                        <!-- Update the description -->
+                        <p class="text-blue-100 text-lg">
+                            {% if session.role == 'student' %}
+                            Here's your learning progress and upcoming tasks.
+                            {% elif session.role == 'teacher' %}
+                            Manage your classes and track student progress.
+                            {% else %}
+                            Here's what's happening with your school today.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
+                            <i class="fas fa-graduation-cap text-white text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mr-3">
+                                <i class="fas fa-user-graduate text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-blue-100 text-sm">Total Students</p>
+                                <p class="text-2xl font-bold text-white">{{ total_students|default('1,245') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mr-3">
+                                <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-blue-100 text-sm">Active Teachers</p>
+                                <p class="text-2xl font-bold text-white">{{ total_teachers|default('48') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mr-3">
+                                <i class="fas fa-school text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-blue-100 text-sm">Running Classes</p>
+                                <p class="text-2xl font-bold text-white">{{ total_classes|default('24') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mr-3">
+                                <i class="fas fa-chart-line text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-blue-100 text-sm">Avg Attendance</p>
+                                <p class="text-2xl font-bold text-white">94.5%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {% if session.role == 'admin' or session.role == 'teacher' %}
+        <a href="{{ url_for('add_class') }}" 
+           class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-plus"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">
+                {% if session.role == 'teacher' %}Add Class{% else %}Manage Classes{% endif %}
+            </span>
+        </a>
+        {% endif %}
+        
+        {% if session.role == 'student' %}
+        <a href="{{ url_for('student_profile') }}" 
+           class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">My Profile</span>
+        </a>
+        {% endif %}
+        
+        <a href="{{ url_for('courses') }}" 
+           class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center hover:from-blue-100 hover:to-blue-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">Courses</span>
+        </a>
+        
+        <a href="{{ url_for('assignments') }}" 
+           class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-300">Assignments</span>
+        </a>
+        
+        <a href="{{ url_for('attendance') }}" 
+           class="group bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-4 text-center hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-yellow-600 transition-colors duration-300">Attendance</span>
+        </a>
+        
+        <a href="{{ url_for('online_classes') }}" 
+           class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center hover:from-purple-100 hover:to-purple-200 transition-all duration-300 hover-lift">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                <i class="fas fa-video"></i>
+            </div>
+            <span class="font-medium text-gray-700 group-hover:text-purple-600 transition-colors duration-300">Online Classes</span>
+        </a>
+    </div>
+    
+    <!-- Main Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Recent Activities -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInLeft">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold gradient-text">Recent Activities</h2>
+                    <button onclick="refreshActivities()" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for activity in recent_activities %}
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-blue-50 transition-all duration-300 hover-lift">
+                        <div class="w-10 h-10 rounded-full 
+                            {% if activity.type == 'student' %}bg-blue-100 text-blue-600
+                            {% elif activity.type == 'attendance' %}bg-green-100 text-green-600
+                            {% elif activity.type == 'assignment' %}bg-purple-100 text-purple-600
+                            {% elif activity.type == 'submission' %}bg-yellow-100 text-yellow-600
+                            {% else %}bg-gray-100 text-gray-600{% endif %} 
+                            flex items-center justify-center mr-3">
+                            <i class="fas 
+                                {% if activity.type == 'student' %}fa-user-graduate
+                                {% elif activity.type == 'attendance' %}fa-clipboard-check
+                                {% elif activity.type == 'assignment' %}fa-file-alt
+                                {% elif activity.type == 'submission' %}fa-paper-plane
+                                {% else %}fa-bell{% endif %}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-900">{{ activity.title }}</p>
+                            <p class="text-sm text-gray-600">{{ activity.time|datetimeformat }}</p>
+                        </div>
+                        <span class="text-xs text-gray-500">{{ activity.time|timeago }}</span>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- No Activities -->
+                    {% if not recent_activities %}
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-history text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600">No recent activities</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Attendance Stats -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInUp">
+                <h3 class="text-lg font-bold mb-4 gradient-text">
+                    {% if session.role == 'student' %}My Attendance
+                    {% elif session.role == 'teacher' %}Class Attendance
+                    {% else %}Attendance Overview{% endif %}
+                </h3>
+                <div class="space-y-4">
+                    {% for stat in attendance_stats %}
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium">{{ stat.class }}</span>
+                            <span class="text-blue-600 font-bold">{{ stat.percentage }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full progress-fill" 
+                                 style="width: {{ stat.percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if not attendance_stats %}
+                    <div class="text-center py-4">
+                        <p class="text-gray-600">No attendance data available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Performance Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInUp">
+                    <h3 class="text-lg font-bold mb-4 gradient-text">System Status</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <span class="font-medium">LMS Platform</span>
+                            </div>
+                            <span class="text-green-600 font-bold">Online</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-video text-blue-600"></i>
+                                </div>
+                                <span class="font-medium">Video Conferencing</span>
+                            </div>
+                            <span class="text-blue-600 font-bold">2 Active</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-database text-yellow-600"></i>
+                                </div>
+                                <span class="font-medium">Database</span>
+                            </div>
+                            <span class="text-yellow-600 font-bold">85% Used</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Courses -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInUp">
+                    <h3 class="text-lg font-bold mb-4 gradient-text">
+                        {% if session.role == 'student' %}My Courses
+                        {% elif session.role == 'teacher' %}My Teaching
+                        {% else %}Popular Courses{% endif %}
+                    </h3>
+                    <div class="space-y-3">
+                        {% for course in user_courses %}
+                        <div class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors duration-300">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium">{{ course.course_name }}</p>
+                                <p class="text-sm text-gray-600">{{ course.course_code or 'General' }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if not user_courses %}
+                        <div class="text-center py-4">
+                            <p class="text-gray-600">No courses assigned</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="space-y-6">
+            <!-- Upcoming Events -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInRight">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold gradient-text">Upcoming Events</h2>
+                    <a href="{{ url_for('calendar') }}" class="text-blue-600 hover:text-blue-800 transition-colors duration-300">
+                        <i class="fas fa-calendar-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for event in upcoming_events %}
+                    <div class="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl hover-lift transition-all duration-300">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col items-center justify-center text-white mr-3 flex-shrink-0">
+                                <span class="font-bold text-sm">{{ event.day }}</span>
+                                <span class="text-xs">{{ event.month }}</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-900">{{ event.title }}</h4>
+                                <p class="text-sm text-gray-600 mt-1">{{ event.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- No Events -->
+                    {% if not upcoming_events %}
+                    <div class="text-center py-6">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-calendar text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-600 text-sm">No upcoming events</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Quick Analytics -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl animate__animated animate__fadeInRight">
+                <h3 class="text-xl font-bold mb-4">Quick Analytics</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-white/10 rounded-lg">
+                        <span>Active Students</span>
+                        <span class="font-bold">1,245</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/10 rounded-lg">
+                        <span>Today's Attendance</span>
+                        <span class="font-bold">94.2%</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/10 rounded-lg">
+                        <span>Pending Assignments</span>
+                        <span class="font-bold">42</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white/10 rounded-lg">
+                        <span>Online Classes</span>
+                        <span class="font-bold">3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Assignments (for students) -->
+            {% if session.role == 'student' and pending_assignments %}
+            <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInRight">
+                <h3 class="text-xl font-bold mb-4 gradient-text">Pending Assignments</h3>
+                <div class="space-y-4">
+                    {% for assignment in pending_assignments %}
+                    <div class="p-3 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border border-red-100">
+                        <h4 class="font-bold text-gray-900">{{ assignment.title }}</h4>
+                        <p class="text-sm text-gray-600">{{ assignment.course_name }}</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-sm text-red-600 font-medium">
+                                Due: {{ assignment.due_date|datetimeformat }}
+                            </span>
+                            {% if assignment.days_left %}
+                            <span class="text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">
+                                {{ assignment.days_left }} days left
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- System Notifications -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInRight">
+                <h3 class="text-xl font-bold mb-4 gradient-text">System Alerts</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center p-2 bg-green-50 rounded-lg">
+                        <div class="w-2 h-2 rounded-full bg-green-500 mr-3 animate-pulse"></div>
+                        <span class="text-sm text-gray-700">All systems operational</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-yellow-50 rounded-lg">
+                        <div class="w-2 h-2 rounded-full bg-yellow-500 mr-3 animate-pulse"></div>
+                        <span class="text-sm text-gray-700">Database backup in progress</span>
+                    </div>
+                    <div class="flex items-center p-2 bg-blue-50 rounded-lg">
+                        <div class="w-2 h-2 rounded-full bg-blue-500 mr-3 animate-pulse"></div>
+                        <span class="text-sm text-gray-700">LMS update scheduled</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Section: Recent Updates -->
+    <div class="mt-8 bg-white rounded-2xl shadow-xl p-6 animate__animated animate__fadeInUp">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold gradient-text">Recent Updates</h2>
+            <div class="flex items-center space-x-4">
+                <button class="ripple px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-sm">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                </button>
+                <button class="ripple px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-300 text-sm">
+                    View All
+                </button>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for i in range(5) %}
+                    <tr class="hover:bg-blue-50 transition-colors duration-200">
+                        <td class="px-4 py-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                {% if i == 0 %}bg-blue-100 text-blue-800
+                                {% elif i == 1 %}bg-green-100 text-green-800
+                                {% elif i == 2 %}bg-purple-100 text-purple-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {% if i == 0 %}Assignment
+                                {% elif i == 1 %}Quiz
+                                {% elif i == 2 %}Announcement
+                                {% else %}Update{% endif %}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 font-medium text-gray-900">
+                            {% if i == 0 %}New Math Assignment Posted
+                            {% elif i == 1 %}Weekly Quiz Available
+                            {% elif i == 2 %}School Holiday Notice
+                            {% else %}System Maintenance{% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-gray-600">
+                            {% if i < 3 %}Mathematics{% else %}System{% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-gray-600">Today</td>
+                        <td class="px-4 py-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium 
+                                {% if i == 0 %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                                {% if i == 0 %}Pending{% else %}Active{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function refreshActivities() {
+        location.reload();
+    }
+</script>
+{% endblock %}

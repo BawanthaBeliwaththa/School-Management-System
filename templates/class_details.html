@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Class Details - {{ class_info.name }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ class_info.name }}</h1>
+            <p class="text-gray-600 dark:text-gray-300">Section {{ class_info.section }}</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{{ url_for('class_students', class_id=class_info.id) }}"
+               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                <i class="fas fa-users mr-2"></i> View Students ({{ class_info.student_count or 0 }})
+            </a>
+            {% if session.type == 'admin' %}
+            <a href="{{ url_for('assign_teacher', class_id=class_info.id) }}"
+               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center">
+                <i class="fas fa-chalkboard-teacher mr-2"></i> Assign Teacher
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Class Information -->
+        <div class="lg:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow mb-6">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Class Information</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Class Details</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Class Name:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.name }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Section:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.section }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Room Number:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.room_number or 'Not assigned' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Academic Year:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.academic_year or 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Teacher Information</h3>
+                            {% if class_info.teacher %}
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Teacher:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.teacher }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">Teacher ID:</span>
+                                    <span class="font-medium text-gray-800 dark:text-white">{{ class_info.teacher_id }}</span>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-chalkboard-teacher text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
+                                <p class="text-gray-600 dark:text-gray-400">No teacher assigned</p>
+                                {% if session.type == 'admin' %}
+                                <a href="{{ url_for('assign_teacher', class_id=class_info.id) }}"
+                                   class="mt-2 inline-block text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                    Assign Teacher
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Courses -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Courses</h2>
+                </div>
+                <div class="p-6">
+                    {% if courses %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for course in courses %}
+                        <div class="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <h3 class="font-medium text-gray-800 dark:text-white">{{ course.course_name }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ course.course_code }}</p>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">Teacher: {{ course.course_teacher or 'Not assigned' }}</span>
+                                <span class="text-gray-600 dark:text-gray-400">{{ course.credit_hours }} credits</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-book-open text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
+                        <p class="text-gray-600 dark:text-gray-400">No courses assigned to this class</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="space-y-6">
+            <!-- Announcements -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Recent Announcements</h2>
+                </div>
+                <div class="p-4">
+                    {% if announcements %}
+                    <div class="space-y-4">
+                        {% for announcement in announcements %}
+                        <div class="border-l-4 border-blue-500 pl-3 py-1">
+                            <h3 class="font-medium text-gray-800 dark:text-white text-sm">{{ announcement.title }}</h3>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                By {{ announcement.created_by_name }} • {{ announcement.created_at|timeago }}
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">No announcements</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Upcoming Events -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Upcoming Events</h2>
+                </div>
+                <div class="p-4">
+                    {% if events %}
+                    <div class="space-y-4">
+                        {% for event in events %}
+                        <div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-blue-600 dark:text-blue-300 font-bold">{{ event.event_date.day }}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-800 dark:text-white text-sm">{{ event.title }}</h3>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                                        {{ event.event_date|datetimeformat('%b %d, %Y') }}
+                                        {% if event.event_type %}
+                                        • <span class="capitalize">{{ event.event_type }}</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">No upcoming events</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
