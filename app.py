@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.secret_key = 'abcd21234455'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'bawwa'
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'python_sms'
 
 # File upload configuration
@@ -4520,4 +4520,5 @@ if __name__ == "__main__":
         
         mysql.connection.commit()
     
+
     app.run(debug=True, host='0.0.0.0', port=5000)
