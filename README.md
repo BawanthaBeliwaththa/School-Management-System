@@ -4,7 +4,7 @@
 
 A comprehensive School Management System built with **Flask** that provides role-based access for **Administrators, Teachers, and Students**. The system includes features for attendance tracking, assignment management, course enrollment, gradebook, online classes, and more.
 
-![Dashboard Preview](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=SMS+Dashboard)
+![Dashboard Preview](https://raw.githubusercontent.com/BawanthaBeliwaththa/School-Management-System/refs/heads/main/images/dashboard.png)
 
 ## 🚀 Features
 
@@ -111,7 +111,7 @@ The system uses the following main tables:
 - **sms_course_enrollments** - Student course enrollments
 - **sms_assignment_submissions** - Assignment submissions
 
-![Database Schema](https://via.placeholder.com/800x400/10B981/FFFFFF?text=Database+Schema)
+![Database Schema](https://raw.githubusercontent.com/BawanthaBeliwaththa/School-Management-System/refs/heads/main/images/DB.png)
 
 ## 🔐 Default Login Credentials
 
@@ -167,13 +167,13 @@ school-management-system/
 ## 🎨 Screenshots
 
 ### Dashboard View
-![Admin Dashboard](https://via.placeholder.com/800x400/8B5CF6/FFFFFF?text=Admin+Dashboard)
+![Admin Dashboard](https://raw.githubusercontent.com/BawanthaBeliwaththa/School-Management-System/refs/heads/main/images/dashboard.png)
 
 ### Teacher Interface
-![Teacher Panel](https://via.placeholder.com/800x400/F59E0B/FFFFFF?text=Teacher+Interface)
+![Teacher Panel](https://raw.githubusercontent.com/BawanthaBeliwaththa/School-Management-System/refs/heads/main/images/teacher.png)
 
 ### Student Portal
-![Student Portal](https://via.placeholder.com/800x400/10B981/FFFFFF?text=Student+Portal)
+![Student Portal](https://raw.githubusercontent.com/BawanthaBeliwaththa/School-Management-System/refs/heads/main/images/student.png)
 
 ## 🔧 Configuration
 
@@ -221,40 +221,6 @@ MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 - `GET /assignments` - Assignment listing
 - `POST /assignments` - Create assignment
 - `GET /online_classes` - Online classes
-
-## 🚀 Deployment on GitHub
-
-### Step 1: Initialize Git Repository
-```bash
-git init
-git add .
-git commit -m "Initial commit - School Management System"
-```
-
-### Step 2: Create GitHub Repository
-1. Go to https://github.com
-2. Click "New repository"
-3. Name it "school-management-system"
-4. Don't initialize with README (we already have one)
-
-### Step 3: Push to GitHub
-```bash
-git remote add origin https://github.com/bawanthabeliwaththa/school-management-system.git
-git branch -M main
-git push -u origin main
-```
-
-### Step 4: Configure for Deployment
-Create `.gitignore`:
-```gitignore
-__pycache__/
-*.pyc
-venv/
-.env
-uploads/
-*.db
-.DS_Store
-```
 
 ## 🌐 Deployment Options
 
