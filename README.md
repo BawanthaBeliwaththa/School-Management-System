@@ -320,7 +320,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📧 Contact
 
 For questions or support:
-- Email: support@bawantha-beliwaththa.me
+- Email: admin@bawantha-beliwaththa.me
 - GitHub Issues: [Report Issues](https://github.com/bawanthabeliwaththa/school-management-system/issues)
 
 ## 🙏 Acknowledgments
