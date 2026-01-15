@@ -125,8 +125,8 @@ VALUES ('admin@school.com', 'admin123', 'System', 'Admin', 'administrator', 'act
 
 **Default Logins:**
 - **Admin:** admin@school.com / admin123
-- **Teacher:** teacher@school.com / teacher123 (create via admin)
-- **Student:** student@school.com / student123 (create via admin)
+- **Teacher:** john.smith@school.com / teacher123 (create via admin)
+- **Student:** emma.watson@student.com / student123 (create via admin)
 
 ## 🚦 Running the Application
 
